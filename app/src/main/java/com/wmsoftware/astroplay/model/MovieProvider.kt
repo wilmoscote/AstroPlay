@@ -47,8 +47,7 @@ object MovieProvider {
             "Ciencia ficción",
             "Deporte",
             "Suspense",
-            "Guerra",
-            "Western"
+            "Guerra"
         )
     }
 }
