@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -89,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
                     binding.txtEmailRegister.requestFocus()
                 }
             } else {
-                Snackbar.make(binding.txtPass,getString(R.string.empty_fields_error), Snackbar.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity,getString(R.string.empty_fields_error),Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -173,7 +172,7 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         runOnUiThread {
                             binding.loading.isVisible = false
-                            Snackbar.make(binding.txtPass,getString(R.string.login_error,task.exception?.message), Snackbar.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity,getString(R.string.login_error,task.exception?.message),Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -252,7 +251,7 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         runOnUiThread {
                             binding.loading.isVisible = false
-                            Snackbar.make(binding.txtPass,getString(R.string.user_created_error,task.exception?.message), Snackbar.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity,getString(R.string.user_created_error,task.exception?.message),Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

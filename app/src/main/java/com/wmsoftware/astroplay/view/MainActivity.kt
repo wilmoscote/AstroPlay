@@ -87,7 +87,11 @@ class MainActivity : AppCompatActivity() {
         askNotificationPermission()
         CoroutineScope(Dispatchers.IO).launch {
             userPreferences.getUser().collect { user ->
-                listenToUserChanges(user?.id ?: "")
+                try {
+                    listenToUserChanges(user?.id ?: "")
+                } catch (e:Exception){
+                    //
+                }
             }
         }
 
