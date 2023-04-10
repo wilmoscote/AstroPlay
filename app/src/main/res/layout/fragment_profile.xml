@@ -42,7 +42,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profileImage" />
+    <TextView
+        android:id="@+id/userEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
+        tools:text="usertest@gmail.com"
+        android:textSize="14sp"
+        android:textColor="@color/palette_white"
+        android:fontFamily="@font/poppins_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/userName" />
     <TextView
         android:id="@+id/userRole"
         android:layout_width="wrap_content"
@@ -51,13 +62,13 @@
         android:background="@drawable/role_badge"
         android:paddingHorizontal="8dp"
         android:paddingVertical="2dp"
-        tools:text="Administrador"
+        tools:text="Usuario"
         android:fontFamily="@font/poppins_bold"
         android:textColor="@color/palette_black"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/userName" />
+        app:layout_constraintTop_toBottomOf="@id/userEmail" />
 
     <LinearLayout
         android:id="@+id/buttonContainer"
@@ -65,6 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:orientation="vertical"
+        android:animateLayoutChanges="true"
         app:layout_constraintTop_toBottomOf="@id/userRole">
 
         <LinearLayout
@@ -115,6 +127,61 @@
                 android:paddingVertical="10dp"
                 android:fontFamily="@font/poppins_medium"
                 android:text="@string/terms_and_conditions"
+                android:textColor="@color/palette_white_down"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/btnLicences"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_horizontal|center_vertical"
+                app:srcCompat="@drawable/ic_licences" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:paddingVertical="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/licences"
+                android:textColor="@color/palette_white_down"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/btnAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_horizontal|center_vertical"
+                app:srcCompat="@drawable/ic_admin_tools" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:paddingVertical="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/btn_admin_tools"
                 android:textColor="@color/palette_white_down"
                 android:textSize="16sp"
                 android:textStyle="bold" />

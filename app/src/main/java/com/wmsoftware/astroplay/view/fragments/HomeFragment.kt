@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -32,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 
 class HomeFragment : Fragment() {
@@ -54,12 +57,19 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             userPreferences.getUser().collect { user ->
                 withContext(Dispatchers.Main){
-                    Glide.with(this@HomeFragment).load(user?.photo).circleCrop()
-                        .error(R.drawable.ic_person).into(binding.profileImg)
-                    binding.welcomeText.text = getString(
-                        R.string.home_welcome_text,
-                        user?.name?.split(" ")?.get(0) ?: "Usuario"
-                    )
+                    try {
+                        Glide.with(this@HomeFragment).load(user?.photo).circleCrop()
+                            .error(R.drawable.default_user).into(binding.profileImg)
+                        binding.welcomeText.text = getString(
+                            R.string.home_welcome_text,
+                            user?.name?.split(" ")?.get(0) ?: "Usuario"
+                        )
+                        val quotes = MovieProvider.getQuotes()
+                        val randomIndex = Random.nextInt(quotes.size)
+                        binding.randomText.text = quotes[randomIndex]
+                    } catch (e:Exception){
+                        //
+                    }
                 }
             }
         }

@@ -52,8 +52,7 @@ class AuthenticationActivity : AppCompatActivity() {
             auth = Firebase.auth
         }
         binding.btnLogin.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+            startActivity(Intent(this, LoginActivity::class.java))
         }
 
         binding.btnGoogle.setOnClickListener {
@@ -115,7 +114,8 @@ class AuthenticationActivity : AppCompatActivity() {
                                                 account.email,
                                                 account.photoUrl.toString(),
                                                 listOf(),
-                                                1
+                                                1,
+                                                false
                                             )
                                             userRef.set(user)
                                                 .addOnSuccessListener {

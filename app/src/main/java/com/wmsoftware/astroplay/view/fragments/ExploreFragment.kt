@@ -4,21 +4,34 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.wmsoftware.astroplay.R
 import com.wmsoftware.astroplay.databinding.FragmentExploreBinding
 import com.wmsoftware.astroplay.model.MovieProvider
+import com.wmsoftware.astroplay.model.interfaces.OnCategorySelectedListener
 import com.wmsoftware.astroplay.view.adapters.CategoryAdapter
+import com.wmsoftware.astroplay.view.adapters.MovieAdapter
+import com.wmsoftware.astroplay.viewmodel.MoviesViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
-class ExploreFragment : Fragment() {
+class ExploreFragment : Fragment(), OnCategorySelectedListener {
     private lateinit var binding: FragmentExploreBinding
+    private val viewModel: MoviesViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -35,9 +48,7 @@ class ExploreFragment : Fragment() {
         }
 
         // Crea el adaptador del RecyclerView
-        val categoryAdapter = CategoryAdapter(MovieProvider.getCategories()) { category ->
-            // Manejar el evento de clic aquí (por ejemplo, navegar a una nueva pantalla con películas de esta categoría)
-        }
+        val categoryAdapter = CategoryAdapter(MovieProvider.getCategories(), this@ExploreFragment)
 
         // Configura el RecyclerView
         binding.rvCategories.apply {
@@ -45,11 +56,45 @@ class ExploreFragment : Fragment() {
             adapter = categoryAdapter
         }
 
+        viewModel.searchResult.observe(viewLifecycleOwner){ movies ->
+            val movieResultAdapter = MovieAdapter(movies) // Reemplaza 'listOf()' con tus datos de películas
+            binding.moviesResultView.adapter = movieResultAdapter
+            binding.moviesResultView.layoutManager = GridLayoutManager(this.requireContext(), 2) // El segundo parámetro es el número de columnas
+        }
+        viewModel.searching.observe(viewLifecycleOwner){
+            binding.searching.isVisible = it
+        }
+        viewModel.searchingGenre.observe(viewLifecycleOwner){
+            binding.searchingGenre.isVisible = it
+        }
+        viewModel.searchGenreResult.observe(viewLifecycleOwner){ movies ->
+            val movieGenreResultAdapter = MovieAdapter(movies) // Reemplaza 'listOf()' con tus datos de películas
+            binding.moviesResultGenreView.adapter = movieGenreResultAdapter
+            binding.moviesResultGenreView.layoutManager = GridLayoutManager(this.requireContext(), 2) // El segundo parámetro es el número de columnas
+        }
+
+        binding.btnBackSearch.setOnClickListener {
+            binding.rvCategories.isVisible = true
+            binding.exploreTitle.isVisible = true
+            binding.btnSearch.isVisible = true
+            binding.searchGenreLayout.isVisible = false
+        }
         // Maneja la acción de búsqueda en el teclado
         binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                //performSearch()
-                true
+                val searchTerm = binding.searchEditText.text.toString()
+
+                // Realiza la búsqueda utilizando corutinas
+                CoroutineScope(Dispatchers.IO).launch {
+                    viewModel.searchMovies(searchTerm)
+                }
+
+                // Oculta el teclado después de realizar la búsqueda
+                val imm = this.requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
+
+                // Devuelve 'true' para indicar que se ha manejado la acción
+                return@setOnEditorActionListener true
             } else {
                 false
             }
@@ -75,6 +120,8 @@ class ExploreFragment : Fragment() {
     }
 
     private fun showSearch() {
+        binding.searchMovieLayout.isVisible = true
+        binding.rvCategories.isVisible = false
         binding.searchInputLayout.apply {
             visibility = View.VISIBLE
             animate().alpha(1f).setDuration(300).setListener(null)
@@ -82,6 +129,8 @@ class ExploreFragment : Fragment() {
     }
 
     private fun hideSearch() {
+        binding.searchMovieLayout.isVisible = false
+        binding.rvCategories.isVisible = true
         binding.searchInputLayout.apply {
             animate().alpha(0f).setDuration(300).setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
@@ -91,16 +140,17 @@ class ExploreFragment : Fragment() {
         }
     }
 
-    private fun performSearch() {
-        val query = binding.searchEditText.text.toString().trim()
-        if (query.isNotEmpty()) {
-            // Realiza la búsqueda aquí
-            // ...
-
-            // Oculta el teclado después de realizar la búsqueda
-            val inputMethodManager =
-                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
+    override fun onCategorySelected(category: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.searchMoviesByGenre(category)
+            withContext(Dispatchers.Main){
+                binding.rvCategories.isVisible = false
+                binding.exploreTitle.isVisible = false
+                binding.btnSearch.isVisible = false
+                binding.searchGenreLayout.isVisible = true
+                binding.searchGenreTitle.text = category
+            }
         }
+        Log.d("AstroDebug","Realizar busqueda de: $category en Fragment!")
     }
 }

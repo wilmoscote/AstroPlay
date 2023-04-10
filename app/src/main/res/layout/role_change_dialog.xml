@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="match_parent"
+        android:fontFamily="@font/poppins"
+        android:layout_height="wrap_content"
+        android:textColor="@color/palette_white"
+        android:hint="@string/email_field"
+        android:inputType="textEmailAddress" />
+
+    <Spinner
+        android:id="@+id/roleSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/disableUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/disable_user"
+        android:textColor="@color/palette_white"
+        android:fontFamily="@font/poppins"
+        app:thumbTint="@color/palette_red"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

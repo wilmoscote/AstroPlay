@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.*
 import android.widget.SeekBar
 import androidx.activity.viewModels
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isVisible
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ProgressiveMediaSource

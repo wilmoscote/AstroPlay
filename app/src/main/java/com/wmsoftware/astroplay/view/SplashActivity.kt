@@ -7,13 +7,21 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.ktx.messaging
 import com.wmsoftware.astroplay.databinding.ActivitySplashBinding
 import com.wmsoftware.astroplay.model.UserPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -32,10 +40,23 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         screenSplash.setKeepOnScreenCondition{true}
-
+        Firebase.messaging.isAutoInitEnabled = true
         userPreferences = UserPreferences(this)
         askNotificationPermission()
+        CoroutineScope(Dispatchers.IO).launch {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
 
+                    return@OnCompleteListener
+                }
+                // Get new FCM registration token
+                val token = task.result
+
+                // Log and toast
+                Log.d("AstroDebug", token)
+            })
+        }
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         if(Firebase.auth.currentUser != null){
             startActivity(Intent(this,MainActivity::class.java))
             finish()

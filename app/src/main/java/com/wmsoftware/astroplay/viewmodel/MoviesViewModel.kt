@@ -30,7 +30,9 @@ class MoviesViewModel : ViewModel() {
     var recentMovieList = MutableLiveData<List<Movie>>()
     var randomMovieList = MutableLiveData<List<Movie>>()
     var searchResult = MutableLiveData<List<Movie>>()
+    var searchGenreResult = MutableLiveData<List<Movie>>()
     var searching = MutableLiveData<Boolean>()
+    var searchingGenre = MutableLiveData<Boolean>()
     var userFavorites = mutableListOf<Movie>()
     fun init(){
         viewModelScope.launch {
@@ -144,6 +146,20 @@ class MoviesViewModel : ViewModel() {
 
         searchResult.postValue(filteredResults)
         searching.postValue(false)
+    }
+
+    suspend fun searchMoviesByGenre(genre: String) {
+        searchingGenre.postValue(true)
+        val genreQuery = db.collection("movies")
+            .whereArrayContains("genre", genre)
+            .get()
+            .await()
+
+        val genreResult = genreQuery.documents.mapNotNull { doc ->
+            doc.toObject(Movie::class.java)
+        }
+        searchGenreResult.postValue(genreResult)
+        searchingGenre.postValue(false)
     }
 
     suspend fun incrementMovieViews(movieId: String) {

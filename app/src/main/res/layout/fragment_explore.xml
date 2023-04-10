@@ -61,7 +61,104 @@
             android:padding="12dp"
             android:textColor="@color/palette_white" />
     </com.google.android.material.textfield.TextInputLayout>
+    <LinearLayout
+        android:id="@+id/searchMovieLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/searchInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+        <TextView
+            android:id="@+id/searchTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="@string/search_movie_title"
+            android:gravity="center_horizontal"
+            android:textColor="@color/palette_white"
+            android:textSize="18sp" />
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/searching"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:visibility="gone"
+            app:lottie_rawRes="@raw/loading"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            android:scaleType="fitXY"
+            android:layout_gravity="center_horizontal"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/moviesResultView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:scrollbars="vertical"
+            android:layout_marginBottom="55dp"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/searchGenreLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/exploreTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/btnBackSearch"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_chevron_left" />
+            <TextView
+                android:id="@+id/searchGenreTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/poppins_bold"
+                android:layout_gravity="center_vertical"
+                tools:text="Acción"
+                android:textColor="@color/palette_white"
+                android:textSize="24sp" />
+        </LinearLayout>
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/searchingGenre"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:visibility="gone"
+            app:lottie_rawRes="@raw/loading"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            android:scaleType="fitXY"
+            android:layout_gravity="center_horizontal"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/moviesResultGenreView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="55dp"
+            android:scrollbars="vertical"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2" />
+    </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCategories"
         android:layout_width="match_parent"

@@ -26,6 +26,23 @@ object MovieProvider {
         )
     }
 
+    fun getQuotes(): List<String> {
+        return listOf(
+            "¿Qué deseas ver hoy?",
+            "¡Encuentra tu próxima aventura!",
+            "¿Listo para una nueva historia?",
+            "¡Sumérgete en un mundo de cine!",
+            "¡Ponte cómodo y disfruta!",
+            "Explora y disfruta.",
+            "¡Tu película favorita te espera!",
+            "¡Escoge, reproduce y disfruta!",
+            "¡Relájate con una buena película!",
+            "¡Hay tanto por descubrir!",
+            "¡Que comience la función!"
+        )
+    }
+
+
     fun getCategories(): List<String>{
         return  listOf(
             "Acción",
@@ -45,7 +62,7 @@ object MovieProvider {
             "Misterio",
             "Romance",
             "Ciencia ficción",
-            "Deporte",
+            "Deportes",
             "Suspense",
             "Guerra"
         )
