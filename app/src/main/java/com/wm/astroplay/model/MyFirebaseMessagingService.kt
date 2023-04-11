@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.model
+package com.wm.astroplay.model
 
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService

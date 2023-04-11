@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace 'com.wmsoftware.astroplay'
+    namespace 'com.wm.astroplay'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.wmsoftware.astroplay"
+        applicationId "com.wm.astroplay"
         minSdk 24
         targetSdk 33
         versionCode 1

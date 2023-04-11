@@ -1,6 +1,6 @@
-package com.wmsoftware.astroplay.view
+package com.wm.astroplay.view
 
-import com.wmsoftware.astroplay.view.PlayActivity
+import com.wm.astroplay.view.PlayActivity
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -19,12 +19,12 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import com.wmsoftware.astroplay.R
-import com.wmsoftware.astroplay.databinding.ActivityMovieDetailBinding
-import com.wmsoftware.astroplay.model.Movie
-import com.wmsoftware.astroplay.model.User
-import com.wmsoftware.astroplay.model.UserPreferences
-import com.wmsoftware.astroplay.viewmodel.MoviesViewModel
+import com.wm.astroplay.R
+import com.wm.astroplay.databinding.ActivityMovieDetailBinding
+import com.wm.astroplay.model.Movie
+import com.wm.astroplay.model.User
+import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.viewmodel.MoviesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect

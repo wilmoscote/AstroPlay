@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view.fragments
+package com.wm.astroplay.view.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
-import com.wmsoftware.astroplay.R
-import com.wmsoftware.astroplay.databinding.FragmentFavoritesBinding
-import com.wmsoftware.astroplay.model.UserPreferences
-import com.wmsoftware.astroplay.view.adapters.MovieAdapter
+import com.wm.astroplay.R
+import com.wm.astroplay.databinding.FragmentFavoritesBinding
+import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.view.adapters.MovieAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

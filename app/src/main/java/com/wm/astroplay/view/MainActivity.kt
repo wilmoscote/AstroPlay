@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view
+package com.wm.astroplay.view
 
 import android.Manifest
 import android.content.ActivityNotFoundException
@@ -31,19 +31,19 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-import com.wmsoftware.astroplay.BuildConfig
+import com.wm.astroplay.BuildConfig
 
-import com.wmsoftware.astroplay.R
-import com.wmsoftware.astroplay.databinding.ActivityMainBinding
-import com.wmsoftware.astroplay.model.Movie
-import com.wmsoftware.astroplay.model.MovieProvider
-import com.wmsoftware.astroplay.model.User
-import com.wmsoftware.astroplay.model.UserPreferences
-import com.wmsoftware.astroplay.view.fragments.ExploreFragment
-import com.wmsoftware.astroplay.view.fragments.FavoritesFragment
-import com.wmsoftware.astroplay.view.fragments.HomeFragment
-import com.wmsoftware.astroplay.view.fragments.ProfileFragment
-import com.wmsoftware.astroplay.viewmodel.MoviesViewModel
+import com.wm.astroplay.R
+import com.wm.astroplay.databinding.ActivityMainBinding
+import com.wm.astroplay.model.Movie
+import com.wm.astroplay.model.MovieProvider
+import com.wm.astroplay.model.User
+import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.view.fragments.ExploreFragment
+import com.wm.astroplay.view.fragments.FavoritesFragment
+import com.wm.astroplay.view.fragments.HomeFragment
+import com.wm.astroplay.view.fragments.ProfileFragment
+import com.wm.astroplay.viewmodel.MoviesViewModel
 import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

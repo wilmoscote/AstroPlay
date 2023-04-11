@@ -1,11 +1,11 @@
-package com.wmsoftware.astroplay.view.adapters
+package com.wm.astroplay.view.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.wmsoftware.astroplay.databinding.CategoryItemBinding
-import com.wmsoftware.astroplay.model.interfaces.OnCategorySelectedListener
+import com.wm.astroplay.databinding.CategoryItemBinding
+import com.wm.astroplay.model.interfaces.OnCategorySelectedListener
 
 class CategoryAdapter(private val categories: List<String>, val listener: OnCategorySelectedListener) :
     RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {

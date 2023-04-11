@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view.fragments
+package com.wm.astroplay.view.fragments
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -16,13 +16,13 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.wmsoftware.astroplay.R
-import com.wmsoftware.astroplay.databinding.FragmentExploreBinding
-import com.wmsoftware.astroplay.model.MovieProvider
-import com.wmsoftware.astroplay.model.interfaces.OnCategorySelectedListener
-import com.wmsoftware.astroplay.view.adapters.CategoryAdapter
-import com.wmsoftware.astroplay.view.adapters.MovieAdapter
-import com.wmsoftware.astroplay.viewmodel.MoviesViewModel
+import com.wm.astroplay.R
+import com.wm.astroplay.databinding.FragmentExploreBinding
+import com.wm.astroplay.model.MovieProvider
+import com.wm.astroplay.model.interfaces.OnCategorySelectedListener
+import com.wm.astroplay.view.adapters.CategoryAdapter
+import com.wm.astroplay.view.adapters.MovieAdapter
+import com.wm.astroplay.viewmodel.MoviesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

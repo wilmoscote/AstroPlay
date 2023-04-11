@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view
+package com.wm.astroplay.view
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -13,22 +13,28 @@ import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.ui.PlayerControlView
 import com.google.android.exoplayer2.ui.StyledPlayerControlView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.wmsoftware.astroplay.databinding.ActivityPlayBinding
-import com.wmsoftware.astroplay.view.MainActivity.Companion.TAG
-import com.wmsoftware.astroplay.viewmodel.MoviesViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.wm.astroplay.R
+import com.wm.astroplay.databinding.ActivityPlayBinding
+import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.view.MainActivity.Companion.TAG
+import com.wm.astroplay.viewmodel.MoviesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class PlayActivity : AppCompatActivity(), Player.Listener {
     private lateinit var binding: ActivityPlayBinding
+    private lateinit var userPreferences: UserPreferences
     private var exoPlayer: ExoPlayer? = null
     private var playbackPosition = 0L
     private var playWhenReady = true
@@ -36,13 +42,17 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
     private var brightness: Int = 0
     private var startX = 0f
     private var startY = 0f
+    var url = ""
+    var id = ""
+    var isResumingMovie = false
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val url = intent.getStringExtra("url") ?: ""
-        val id = intent.getStringExtra("id") ?: ""
+        userPreferences = UserPreferences(applicationContext)
+        url = intent.getStringExtra("url") ?: ""
+        id = intent.getStringExtra("id") ?: ""
         CoroutineScope(Dispatchers.IO).launch {
             viewModel.incrementMovieViews(id)
         }
@@ -98,11 +108,15 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
             }
             true
         }
-
-        preparePlayer(url)
+        CoroutineScope(Dispatchers.IO).launch {
+            userPreferences.getMoviePlaybackPosition(id).collect { time ->
+                isResumingMovie = time != null
+            }
+        }
+        preparePlayer()
     }
 
-    private fun preparePlayer(url:String) {
+    private fun preparePlayer() {
         // Crear y configurar el reproductor ExoPlayer
         exoPlayer = ExoPlayer.Builder(this).build().apply {
             playWhenReady = true
@@ -183,7 +197,27 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
 
     override fun onPause() {
         super.onPause()
-        relasePlayer()
+        playbackPosition = exoPlayer?.currentPosition ?: 0
+        // Libera el reproductor si es necesario
+        if (isFinishing) {
+            exoPlayer?.release()
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            userPreferences.saveMoviePlaybackPosition(id, playbackPosition)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Restaura la posición de reproducción
+        if (exoPlayer != null) {
+            exoPlayer?.seekTo(playbackPosition)
+            exoPlayer?.playWhenReady = true
+        } else {
+            // Inicializa el reproductor si es necesario
+            preparePlayer()
+        }
     }
 
     override fun onDestroy() {
@@ -199,6 +233,9 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
                 Player.STATE_BUFFERING -> binding.loading.isVisible = true
                 Player.STATE_READY -> {
                     binding.loading.isVisible = false
+                    if (isResumingMovie){
+                        resumeMovie()
+                    }
                 }
                 // También puedes manejar otros estados aquí, si lo deseas
                 Player.STATE_ENDED -> {
@@ -223,6 +260,35 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+    }
+
+    private fun resumeMovie() {
+        lifecycleScope.launch {
+            userPreferences.getMoviePlaybackPosition(id).collect() { time ->
+                runOnUiThread {
+                    MaterialAlertDialogBuilder(this@PlayActivity, R.style.MaterialAlertDialog_rounded)
+                        .setTitle("Continuar reproducción")
+                        .setMessage("¿Deseas continuar viendo la película desde donde la dejaste?")
+                        .setPositiveButton("Continuar") { _, _ ->
+                            // Inicia PlayActivity y pasa la posición de reproducción
+                            if (exoPlayer != null) {
+                                exoPlayer?.seekTo(time ?: 0)
+                                exoPlayer?.playWhenReady = true
+                            }
+                            isResumingMovie = false
+                        }
+                        .setNegativeButton("Empezar de nuevo") { _, _ ->
+                            // Inicia PlayActivity sin pasar la posición de reproducción
+                            if (exoPlayer != null) {
+                                exoPlayer?.seekTo(0)
+                                exoPlayer?.playWhenReady = true
+                            }
+                            isResumingMovie = false
+                        }
+                        .show()
+                }
+            }
+        }
     }
 
 }

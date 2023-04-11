@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.viewmodel
+package com.wm.astroplay.viewmodel
 
 import androidx.lifecycle.ViewModel
 

@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view.fragments
+package com.wm.astroplay.view.fragments
 
 import android.content.Context
 import android.content.Intent
@@ -22,12 +22,12 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import com.wmsoftware.astroplay.BuildConfig
-import com.wmsoftware.astroplay.R
-import com.wmsoftware.astroplay.databinding.FragmentProfileBinding
-import com.wmsoftware.astroplay.model.UserPreferences
-import com.wmsoftware.astroplay.view.AuthenticationActivity
-import com.wmsoftware.astroplay.view.MainActivity.Companion.TAG
+import com.wm.astroplay.BuildConfig
+import com.wm.astroplay.R
+import com.wm.astroplay.databinding.FragmentProfileBinding
+import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.view.AuthenticationActivity
+import com.wm.astroplay.view.MainActivity.Companion.TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

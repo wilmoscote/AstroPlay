@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view.fragments
+package com.wm.astroplay.view.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -24,12 +24,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.wmsoftware.astroplay.R
-import com.wmsoftware.astroplay.databinding.FragmentHomeBinding
-import com.wmsoftware.astroplay.model.MovieProvider
-import com.wmsoftware.astroplay.model.UserPreferences
-import com.wmsoftware.astroplay.view.adapters.MovieAdapter
-import com.wmsoftware.astroplay.viewmodel.MoviesViewModel
+import com.wm.astroplay.R
+import com.wm.astroplay.databinding.FragmentHomeBinding
+import com.wm.astroplay.model.MovieProvider
+import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.view.adapters.MovieAdapter
+import com.wm.astroplay.viewmodel.MoviesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

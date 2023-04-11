@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.model.interfaces
+package com.wm.astroplay.model.interfaces
 
 interface OnCategorySelectedListener {
     fun onCategorySelected(category: String)

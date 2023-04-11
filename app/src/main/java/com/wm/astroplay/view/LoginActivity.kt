@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view
+package com.wm.astroplay.view
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -11,11 +11,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.wmsoftware.astroplay.BuildConfig
-import com.wmsoftware.astroplay.R
-import com.wmsoftware.astroplay.databinding.ActivityLoginBinding
-import com.wmsoftware.astroplay.model.User
-import com.wmsoftware.astroplay.model.UserPreferences
+import com.wm.astroplay.BuildConfig
+import com.wm.astroplay.R
+import com.wm.astroplay.databinding.ActivityLoginBinding
+import com.wm.astroplay.model.User
+import com.wm.astroplay.model.UserPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

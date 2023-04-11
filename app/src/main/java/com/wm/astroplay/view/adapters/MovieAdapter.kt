@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view.adapters
+package com.wm.astroplay.view.adapters
 
 import android.content.Intent
 import android.os.Parcelable
@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.wmsoftware.astroplay.databinding.MovieCardBinding
-import com.wmsoftware.astroplay.model.Movie
-import com.wmsoftware.astroplay.view.MovieDetailActivity
+import com.wm.astroplay.databinding.MovieCardBinding
+import com.wm.astroplay.model.Movie
+import com.wm.astroplay.view.MovieDetailActivity
 import java.io.Serializable
 
 class MovieAdapter(private val movies: List<Movie>) : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {

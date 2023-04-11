@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view
+package com.wm.astroplay.view
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -13,12 +13,13 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
-import com.wmsoftware.astroplay.databinding.ActivitySplashBinding
-import com.wmsoftware.astroplay.model.UserPreferences
+import com.wm.astroplay.databinding.ActivitySplashBinding
+import com.wm.astroplay.model.UserPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,6 +41,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         screenSplash.setKeepOnScreenCondition{true}
+        FirebaseApp.initializeApp(applicationContext)
         Firebase.messaging.isAutoInitEnabled = true
         userPreferences = UserPreferences(this)
         askNotificationPermission()

@@ -7,6 +7,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:478323186494:android:caaeac32648a5d93d92a6f",
+        "android_client_info": {
+          "package_name": "com.wm.astroplay"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "478323186494-pimvg7unlhs152u1tmocijddhurgd06q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wm.astroplay",
+            "certificate_hash": "b34d3e9a91aa10d8eec165542e0a4f60cdae75a5"
+          }
+        },
+        {
+          "client_id": "478323186494-v5cb5qso4mimrnd3q0q9nct9aairpshm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6sOnJoakKzw6uUenhpGG0OMdUbocymEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "478323186494-bh88jabs1hhgcr62l60tj92erg5oi08g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:478323186494:android:eca4e2fe8a6c83ead92a6f",
         "android_client_info": {
           "package_name": "com.wmsoftware.astroplay"
@@ -14,7 +51,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "478323186494-bh88jabs1hhgcr62l60tj92erg5oi08g.apps.googleusercontent.com",
+          "client_id": "478323186494-tlsv13e3p2vkkd1mil57t6t6gtos6p2j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wmsoftware.astroplay",
+            "certificate_hash": "b34d3e9a91aa10d8eec165542e0a4f60cdae75a5"
+          }
+        },
+        {
+          "client_id": "478323186494-v5cb5qso4mimrnd3q0q9nct9aairpshm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

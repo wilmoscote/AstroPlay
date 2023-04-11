@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.view
+package com.wm.astroplay.view
 
 import android.app.Activity
 import android.content.Intent
@@ -20,11 +20,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
-import com.wmsoftware.astroplay.R
-import com.wmsoftware.astroplay.databinding.ActivityAuthenticationBinding
-import com.wmsoftware.astroplay.model.User
-import com.wmsoftware.astroplay.model.UserPreferences
-import com.wmsoftware.astroplay.viewmodel.AuthenticationViewModel
+import com.wm.astroplay.R
+import com.wm.astroplay.databinding.ActivityAuthenticationBinding
+import com.wm.astroplay.model.User
+import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.viewmodel.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

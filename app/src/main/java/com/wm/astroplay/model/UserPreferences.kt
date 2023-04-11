@@ -1,11 +1,8 @@
-package com.wmsoftware.astroplay.model
+package com.wm.astroplay.model
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -15,6 +12,7 @@ import kotlinx.serialization.json.Json
 
 private val Context.dataStore by preferencesDataStore(name = "userPreferences")
 class UserPreferences(private val context: Context) {
+
     private val dataStore: DataStore<Preferences> by lazy {
         context.dataStore
     }
@@ -26,6 +24,10 @@ class UserPreferences(private val context: Context) {
     }
 
     /** GETTERS **/
+    fun getMoviePlaybackPosition(movieId: String) = dataStore.data.map { preferences ->
+        preferences[longPreferencesKey(movieId)]
+    }
+
     fun getUserTheme() = dataStore.data.map { preferences ->
         preferences[booleanPreferencesKey("theme")]
     }
@@ -48,6 +50,12 @@ class UserPreferences(private val context: Context) {
     suspend fun saveTheme(isDark: Boolean) {
         dataStore.edit { preferences ->
             preferences[booleanPreferencesKey("theme")] = isDark
+        }
+    }
+
+    suspend fun saveMoviePlaybackPosition(movieId: String, position: Long) {
+        dataStore.edit { preferences ->
+            preferences[longPreferencesKey(movieId)] = position
         }
     }
 

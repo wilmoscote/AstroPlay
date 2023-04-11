@@ -51,7 +51,7 @@
     <LinearLayout
         android:id="@+id/brilloSelector"
         android:layout_width="100dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

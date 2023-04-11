@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay.viewmodel
+package com.wm.astroplay.viewmodel
 
 import android.content.Context
 import android.util.Log
@@ -9,11 +9,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.wmsoftware.astroplay.R
-import com.wmsoftware.astroplay.model.Movie
-import com.wmsoftware.astroplay.model.MovieProvider
-import com.wmsoftware.astroplay.model.UserPreferences
-import com.wmsoftware.astroplay.view.MainActivity
+import com.wm.astroplay.R
+import com.wm.astroplay.model.Movie
+import com.wm.astroplay.model.MovieProvider
+import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.view.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

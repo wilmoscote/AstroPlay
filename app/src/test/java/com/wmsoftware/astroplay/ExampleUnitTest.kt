@@ -1,4 +1,4 @@
-package com.wmsoftware.astroplay
+package com.wm.astroplay
 
 import org.junit.Test
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AstroPlay</string>
+    <string name="app_name">AstroPlays</string>
     <string name="login_text">INICIAR SESIÓN</string>
     <string name="continue_google">CONTINUAR CON GOOGLE</string>
     <string name="app_introduction">Descubre un universo lleno de películas y series estelares al alcance de tus dedos</string>
@@ -24,7 +24,7 @@
     <string name="recomended_movies_title">Recomendadas</string>
     <string name="last_movies_title">Ultimas añadidas</string>
     <string name="random_movies_title">Selección random</string>
-    <string name="version_info" translatable="false">AstroPlay v%s</string>
+    <string name="version_info" translatable="false">AstroPlays v%s</string>
     <string name="role_user_1">Usuario</string>
     <string name="role_user_2">Premium</string>
     <string name="role_user_3">Administrador</string>
@@ -61,7 +61,7 @@
     <string name="user_update_error">Ha ocurrido un error al actualizar el usuario.</string>
     <string name="update_app_title">ACTUALIZACIÓN</string>
     <string name="but_update">ACTUALIZAR</string>
-    <string name="default_notification_channel_id">astroplay_notify</string>
+    <string name="default_notification_channel_id">astroplays_notify</string>
     <string name="licences">Licencias</string>
     <string name="manage_user">Administrar usuario</string>
 </resources>
