@@ -65,7 +65,16 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="15dp"
                     app:srcCompat="@drawable/ic_notifications" />
-
+                <ImageView
+                    android:id="@+id/notifyIcon"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginEnd="5dp"
+                    android:visibility="gone"
+                    android:layout_alignTop="@+id/btnNotification"
+                    android:layout_alignEnd="@+id/btnNotification"
+                    app:srcCompat="@drawable/ic_circle_notify" />
             </RelativeLayout>
 
             <com.google.android.material.textfield.TextInputLayout

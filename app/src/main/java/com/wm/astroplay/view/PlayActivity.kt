@@ -199,9 +199,6 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
         super.onPause()
         playbackPosition = exoPlayer?.currentPosition ?: 0
         // Libera el reproductor si es necesario
-        if (isFinishing) {
-            exoPlayer?.release()
-        }
 
         CoroutineScope(Dispatchers.IO).launch {
             userPreferences.saveMoviePlaybackPosition(id, playbackPosition)
@@ -267,9 +264,9 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
             userPreferences.getMoviePlaybackPosition(id).collect() { time ->
                 runOnUiThread {
                     MaterialAlertDialogBuilder(this@PlayActivity, R.style.MaterialAlertDialog_rounded)
-                        .setTitle("Continuar reproducción")
-                        .setMessage("¿Deseas continuar viendo la película desde donde la dejaste?")
-                        .setPositiveButton("Continuar") { _, _ ->
+                        .setTitle(getString(R.string.continue_playing))
+                        .setMessage(getString(R.string.continue_playing_message))
+                        .setPositiveButton(getString(R.string.continuee)) { _, _ ->
                             // Inicia PlayActivity y pasa la posición de reproducción
                             if (exoPlayer != null) {
                                 exoPlayer?.seekTo(time ?: 0)
@@ -277,12 +274,8 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
                             }
                             isResumingMovie = false
                         }
-                        .setNegativeButton("Empezar de nuevo") { _, _ ->
-                            // Inicia PlayActivity sin pasar la posición de reproducción
-                            if (exoPlayer != null) {
-                                exoPlayer?.seekTo(0)
-                                exoPlayer?.playWhenReady = true
-                            }
+                        .setNegativeButton(getString(R.string.cancel)) { _, _ ->
+                            //
                             isResumingMovie = false
                         }
                         .show()

@@ -12,6 +12,7 @@ import com.google.firebase.ktx.Firebase
 import com.wm.astroplay.R
 import com.wm.astroplay.model.Movie
 import com.wm.astroplay.model.MovieProvider
+import com.wm.astroplay.model.Notification
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.view.MainActivity
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +34,7 @@ class MoviesViewModel : ViewModel() {
     var searchGenreResult = MutableLiveData<List<Movie>>()
     var searching = MutableLiveData<Boolean>()
     var searchingGenre = MutableLiveData<Boolean>()
+    var userNotifications = MutableLiveData<List<Notification>>()
     var userFavorites = mutableListOf<Movie>()
     fun init(){
         viewModelScope.launch {
@@ -49,11 +51,11 @@ class MoviesViewModel : ViewModel() {
                     val movies = querySnapshot.documents.mapNotNull { document ->
                         document.toObject(Movie::class.java)
                     }
-                    Log.d(TAG, "Movies fetched. ${querySnapshot.documents.toString()}")
+                    //Log.d(TAG, "Movies fetched. ${querySnapshot.documents.toString()}")
                     movieList.postValue(movies)
                 }
                 .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error al obtener las películas.", exception)
+                    //Log.w(TAG, "Error al obtener las películas.", exception)
                 }
         }
     }
@@ -68,11 +70,11 @@ class MoviesViewModel : ViewModel() {
                     val movies = querySnapshot.documents.mapNotNull { document ->
                         document.toObject(Movie::class.java)
                     }
-                    Log.d(TAG, "Movies fetched. ${querySnapshot.documents.toString()}")
+                    //Log.d(TAG, "Movies fetched. ${querySnapshot.documents.toString()}")
                     popularMovieList.postValue(movies)
                 }
                 .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error al obtener las películas.", exception)
+                    //Log.w(TAG, "Error al obtener las películas.", exception)
                 }
         }
     }
@@ -87,11 +89,11 @@ class MoviesViewModel : ViewModel() {
                     val movies = querySnapshot.documents.mapNotNull { document ->
                         document.toObject(Movie::class.java)
                     }
-                    Log.d(TAG, "Movies fetched. ${querySnapshot.documents.toString()}")
+                    //Log.d(TAG, "Movies fetched. ${querySnapshot.documents.toString()}")
                     recentMovieList.postValue(movies)
                 }
                 .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error al obtener las películas.", exception)
+                    //Log.w(TAG, "Error al obtener las películas.", exception)
                 }
         }
     }
@@ -128,12 +130,10 @@ class MoviesViewModel : ViewModel() {
         val titleResults = titleQuery.documents.mapNotNull { doc ->
             doc.toObject(Movie::class.java)
         }
-        Log.d(TAG,"Title result: ${titleResults.toString()}")
 
         val originalTitleResults = originalTitleQuery.documents.mapNotNull { doc ->
             doc.toObject(Movie::class.java)
         }
-        Log.d(TAG,"OriginalTitle result: ${originalTitleResults.toString()}")
 
         // Combinar los resultados y eliminar duplicados
         val combinedResults = (titleResults + originalTitleResults).distinctBy { it.title }
@@ -178,7 +178,6 @@ class MoviesViewModel : ViewModel() {
     suspend fun isMovieInFavorites(userId: String, movieId: String): Boolean {
         val movieRef = db.collection("users").document(userId).collection("favorites").document(movieId)
         val movieSnapshot = movieRef.get().await()
-        Log.e("AstroDebug","isFavorite ${movieSnapshot.exists().toString()}")
 
         return movieSnapshot.exists()
     }
@@ -201,6 +200,39 @@ class MoviesViewModel : ViewModel() {
                 transaction.set(movieRef, movie)
             }
         }.await()
+    }
+
+    suspend fun getUserNotifications(userId: String) {
+        withContext(Dispatchers.IO){
+            db.collection("notifications")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    val notifications = querySnapshot.documents
+                        .filter { doc ->
+                            val targetUsers = doc["targetUsers"] as? List<*>
+                            targetUsers == null || userId in targetUsers
+                        }.mapNotNull { doc -> doc.toObject(Notification::class.java) }
+                    Log.d(TAG,"Hay notificaciones para ti: ${notifications.toString()}")
+                    userNotifications.postValue(notifications)
+                }
+        }
+    }
+
+    private suspend fun removeUserFromNotificationTarget(userId: String, notificationId: String) {
+        withContext(Dispatchers.IO){
+            val notificationRef = db.collection("notifications").document(notificationId)
+            db.runTransaction { transaction ->
+                val notificationSnapshot = transaction.get(notificationRef)
+                val targetUsers = notificationSnapshot["targetUsers"] as? MutableList<String> ?: mutableListOf()
+                targetUsers.remove(userId)
+                transaction.update(notificationRef, "targetUsers", targetUsers)
+            }.addOnSuccessListener {
+                // El ID del usuario se ha eliminado correctamente de la lista targetUsers
+            }.addOnFailureListener { exception ->
+                // Error al eliminar el ID del usuario de la lista targetUsers
+            }
+        }
     }
 }
 

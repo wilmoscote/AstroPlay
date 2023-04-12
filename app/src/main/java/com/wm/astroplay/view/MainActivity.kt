@@ -18,6 +18,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -39,10 +40,8 @@ import com.wm.astroplay.model.Movie
 import com.wm.astroplay.model.MovieProvider
 import com.wm.astroplay.model.User
 import com.wm.astroplay.model.UserPreferences
-import com.wm.astroplay.view.fragments.ExploreFragment
-import com.wm.astroplay.view.fragments.FavoritesFragment
-import com.wm.astroplay.view.fragments.HomeFragment
-import com.wm.astroplay.view.fragments.ProfileFragment
+import com.wm.astroplay.model.interfaces.FragmentNavigationListener
+import com.wm.astroplay.view.fragments.*
 import com.wm.astroplay.viewmodel.MoviesViewModel
 import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.CoroutineScope
@@ -51,13 +50,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FragmentNavigationListener {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MoviesViewModel by viewModels()
     private val homeFragment = HomeFragment()
     private val profileFragment = ProfileFragment()
     private val favoritesFragment = FavoritesFragment()
     private val exploreFragment = ExploreFragment()
+    private val notificationsFragment = NotificationsFragment()
+
     private lateinit var userPreferences: UserPreferences
     var doubleBackToExitPressedOnce = false
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -267,6 +268,19 @@ class MainActivity : AppCompatActivity() {
             } else {
                 // Directly ask for the permission
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    override fun onNavigateTo(fragment: String) {
+        when(fragment){
+            "notifications" -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment, notificationsFragment).commit()
+            }
+            "home" -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment, homeFragment).commit()
             }
         }
     }

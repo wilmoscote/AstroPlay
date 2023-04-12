@@ -28,6 +28,7 @@ import com.wm.astroplay.R
 import com.wm.astroplay.databinding.FragmentHomeBinding
 import com.wm.astroplay.model.MovieProvider
 import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.model.interfaces.FragmentNavigationListener
 import com.wm.astroplay.view.adapters.MovieAdapter
 import com.wm.astroplay.viewmodel.MoviesViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -42,10 +43,24 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private val viewModel: MoviesViewModel by viewModels()
     private lateinit var userPreferences: UserPreferences
+    private var navigationListener: FragmentNavigationListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is FragmentNavigationListener) {
+            navigationListener = context
+        } else {
+            //throw RuntimeException("$context must implement FragmentNavigationListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        navigationListener = null
     }
 
     override fun onCreateView(
@@ -67,17 +82,18 @@ class HomeFragment : Fragment() {
                         val quotes = MovieProvider.getQuotes()
                         val randomIndex = Random.nextInt(quotes.size)
                         binding.randomText.text = quotes[randomIndex]
+
                     } catch (e:Exception){
                         //
                     }
                 }
+                viewModel.getUserNotifications(user?.id ?: "")
             }
         }
+
         viewModel.init()
         binding.btnNotification.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                //viewModel.saveMoviesToFirestore()
-            }
+            navigationListener?.onNavigateTo("notifications")
         }
 
         binding.textSearch.addTextChangedListener(object : TextWatcher {
@@ -161,7 +177,10 @@ class HomeFragment : Fragment() {
             binding.randomMoviesViewLoading.isVisible = false
         }
 
-
+        viewModel.userNotifications.observe(viewLifecycleOwner){ notifications ->
+            binding.notifyIcon.isVisible = notifications.isNotEmpty()
+        }
         return binding.root
     }
+
 }
