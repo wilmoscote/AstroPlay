@@ -5,17 +5,18 @@
     android:background="@color/palette_black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="15dp">
+    >
 
     <TextView
         android:id="@+id/profileTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/my_profile_title"
-        android:textSize="24sp"
-        android:textColor="@color/palette_white"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="15dp"
         android:fontFamily="@font/poppins_bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/my_profile_title"
+        android:textColor="@color/palette_white"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -75,6 +76,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="15dp"
         android:orientation="vertical"
         android:animateLayoutChanges="true"
         app:layout_constraintTop_toBottomOf="@id/userRole">
@@ -96,7 +98,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="Notificaciones"
+                android:text="@string/notifications_title"
                 android:textColor="@color/palette_white_down"
                 android:fontFamily="@font/poppins_medium"
                 app:thumbTint="@color/palette_red"
@@ -222,7 +224,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="60dp"
         android:gravity="center_horizontal"
         android:textSize="13sp"
         android:fontFamily="@font/poppins"

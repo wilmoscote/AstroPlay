@@ -219,7 +219,7 @@ class MoviesViewModel : ViewModel() {
         }
     }
 
-    private suspend fun removeUserFromNotificationTarget(userId: String, notificationId: String) {
+    suspend fun removeUserFromNotificationTarget(userId: String, notificationId: String) {
         withContext(Dispatchers.IO){
             val notificationRef = db.collection("notifications").document(notificationId)
             db.runTransaction { transaction ->
@@ -229,7 +229,9 @@ class MoviesViewModel : ViewModel() {
                 transaction.update(notificationRef, "targetUsers", targetUsers)
             }.addOnSuccessListener {
                 // El ID del usuario se ha eliminado correctamente de la lista targetUsers
+                Log.d("AstroDebug","User removed from notification")
             }.addOnFailureListener { exception ->
+                Log.d("AstroDebug","User NOT removed from notification")
                 // Error al eliminar el ID del usuario de la lista targetUsers
             }
         }

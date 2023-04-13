@@ -68,4 +68,5 @@
     <string name="continuee">CONTINUAR</string>
     <string name="continue_playing">CONTINUAR VIENDO</string>
     <string name="continue_playing_message">¿Deseas continuar viendo la película desde donde la dejaste?</string>
+    <string name="empty_notifications">No tienes notificaciones.</string>
 </resources>

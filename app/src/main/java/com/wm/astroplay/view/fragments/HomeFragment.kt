@@ -96,6 +96,10 @@ class HomeFragment : Fragment() {
             navigationListener?.onNavigateTo("notifications")
         }
 
+        binding.profileImg.setOnClickListener {
+            navigationListener?.onNavigateTo("profile")
+        }
+
         binding.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
 

@@ -282,6 +282,11 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.nav_host_fragment, homeFragment).commit()
             }
+            "profile" -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment, profileFragment).commit()
+                binding.bottomNavigation.selectedItemId = R.id.profilePage
+            }
         }
     }
 }

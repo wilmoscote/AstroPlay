@@ -13,27 +13,45 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/searchTitle"
+            android:id="@+id/exploreTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
+            android:layout_marginStart="15dp"
             android:fontFamily="@font/poppins_bold"
             android:text="@string/my_favorites_list"
-            android:gravity="center_horizontal"
             android:textColor="@color/palette_white"
-            android:textSize="18sp" />
-        <TextView
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
             android:id="@+id/notFavorites"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="35dp"
-            android:layout_marginHorizontal="20dp"
-            android:fontFamily="@font/poppins_medium"
-            android:text="@string/empty_favorites"
             android:visibility="gone"
-            android:gravity="center_horizontal"
-            android:textColor="@color/palette_white"
-            android:textSize="18sp" />
+            android:orientation="vertical">
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/searching"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:lottie_rawRes="@raw/bookmarkanim"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                android:scaleType="fitXY"
+                android:layout_gravity="center_horizontal"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/empty_favorites"
+                android:gravity="center_horizontal"
+                android:textColor="@color/palette_white"
+                android:textSize="18sp" />
+
+        </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/favoritesMovieView"
             android:layout_width="match_parent"

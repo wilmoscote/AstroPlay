@@ -31,6 +31,7 @@
                     android:id="@+id/profileImg"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true" />
 
@@ -64,6 +65,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="15dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     app:srcCompat="@drawable/ic_notifications" />
                 <ImageView
                     android:id="@+id/notifyIcon"
