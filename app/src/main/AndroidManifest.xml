@@ -17,6 +17,9 @@
         android:theme="@style/Theme.AstroPlay"
         tools:targetApi="31">
         <activity
+            android:name=".view.RequestActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.TermsActivity"
             android:exported="false" />
         <activity

@@ -69,4 +69,10 @@
     <string name="continue_playing">CONTINUAR VIENDO</string>
     <string name="continue_playing_message">¿Deseas continuar viendo la película desde donde la dejaste?</string>
     <string name="empty_notifications">No tienes notificaciones.</string>
+    <string name="send_request">Enviar solicitud</string>
+    <string name="title_field">Titulo</string>
+    <string name="request_movie">Solicitar Contenido</string>
+    <string name="request_activity_info">Utiliza este formulario para solicitar una película o serie que desees ver en nuestra app. Revisaremos tu solicitud a la brevedad y nos esforzaremos por agregar el contenido solicitado lo más pronto posible. Recuerda que solo puedes realizar una solicitud por día. ¡Gracias por ayudarnos a mejorar nuestra selección!</string>
+    <string name="love_message">Hecho con ❤️ por AstroPlay</string>
+    <string name="description_field">Descripción (Opcional)</string>
 </resources>

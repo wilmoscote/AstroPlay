@@ -23,6 +23,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.wm.astroplay.R
 import com.wm.astroplay.databinding.ActivityPlayBinding
+import com.wm.astroplay.model.Movie
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.view.MainActivity.Companion.TAG
 import com.wm.astroplay.viewmodel.MoviesViewModel
@@ -36,14 +37,13 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
     private lateinit var binding: ActivityPlayBinding
     private lateinit var userPreferences: UserPreferences
     private var exoPlayer: ExoPlayer? = null
+    private var movie: Movie? = null
     private var playbackPosition = 0L
     private var playWhenReady = true
     private val viewModel: MoviesViewModel by viewModels()
     private var brightness: Int = 0
     private var startX = 0f
     private var startY = 0f
-    var url = ""
-    var id = ""
     var isResumingMovie = false
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,10 +51,16 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
         userPreferences = UserPreferences(applicationContext)
-        url = intent.getStringExtra("url") ?: ""
-        id = intent.getStringExtra("id") ?: ""
+        movie = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("movie", Movie::class.java)
+        } else {
+            intent.getParcelableExtra<Movie>("movie")
+        }
         CoroutineScope(Dispatchers.IO).launch {
-            viewModel.incrementMovieViews(id)
+            viewModel.incrementMovieViews(movie?.title.toString())
+            runOnUiThread {
+                binding.movieTitleText.text = movie?.title.toString()
+            }
         }
         try {
             window.addFlags(
@@ -109,7 +115,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
             true
         }
         CoroutineScope(Dispatchers.IO).launch {
-            userPreferences.getMoviePlaybackPosition(id).collect { time ->
+            userPreferences.getMoviePlaybackPosition(movie?.title.toString()).collect { time ->
                 isResumingMovie = time != null
             }
         }
@@ -132,7 +138,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
 
         // Crear y configurar la fuente de datos HTTP y la fuente de medios
         val dataSourceFactory = DefaultHttpDataSource.Factory()
-        val mediaItem = MediaItem.fromUri(url)
+        val mediaItem = MediaItem.fromUri(movie?.url.toString())
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
 
         // Preparar el reproductor con la fuente de medios
@@ -144,6 +150,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
         PlayerControlView.VisibilityListener { visibility ->
             // Controla la visibilidad de los controles del reproductor
             binding.brightControls.isVisible = visibility == View.VISIBLE
+            binding.movieTitleText.isVisible = visibility == View.VISIBLE
         }
 
     private fun setScreenBrightness(value: Int){
@@ -201,7 +208,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
         // Libera el reproductor si es necesario
 
         CoroutineScope(Dispatchers.IO).launch {
-            userPreferences.saveMoviePlaybackPosition(id, playbackPosition)
+            userPreferences.saveMoviePlaybackPosition(movie?.title.toString(), playbackPosition)
         }
     }
 
@@ -261,7 +268,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
 
     private fun resumeMovie() {
         lifecycleScope.launch {
-            userPreferences.getMoviePlaybackPosition(id).collect() { time ->
+            userPreferences.getMoviePlaybackPosition(movie?.title.toString()).collect() { time ->
                 runOnUiThread {
                     MaterialAlertDialogBuilder(this@PlayActivity, R.style.MaterialAlertDialog_rounded)
                         .setTitle(getString(R.string.continue_playing))

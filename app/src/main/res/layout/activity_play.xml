@@ -80,6 +80,19 @@
                 android:src="@drawable/ic_double_arrow_down" />
         </LinearLayout>
         </LinearLayout>
+
+    <TextView
+        android:id="@+id/movieTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Irene yo y mi otro yo"
+        android:fontFamily="@font/poppins_bold"
+        android:layout_margin="20dp"
+        android:textSize="16sp"
+        android:textColor="@color/palette_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/loading"
         android:layout_width="100dp"

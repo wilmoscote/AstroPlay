@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.activity.viewModels
@@ -78,8 +79,7 @@ class MovieDetailActivity : AppCompatActivity() {
                                     this@MovieDetailActivity,
                                     PlayActivity::class.java
                                 ).apply {
-                                    putExtra("url", movie?.url)
-                                    putExtra("id", movie?.title)
+                                    putExtra("movie", movie as Parcelable)
                                 })
                         }
                     }
@@ -200,8 +200,7 @@ class MovieDetailActivity : AppCompatActivity() {
                             this@MovieDetailActivity,
                             PlayActivity::class.java
                         ).apply {
-                            putExtra("url", movie?.url)
-                            putExtra("id", movie?.title)
+                            putExtra("movie", movie as Parcelable)
                         })
                 }
                 Log.d("AstroDebug","Ad Dismissed!")

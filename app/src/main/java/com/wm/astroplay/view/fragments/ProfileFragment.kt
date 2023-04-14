@@ -28,6 +28,7 @@ import com.wm.astroplay.databinding.FragmentProfileBinding
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.view.AuthenticationActivity
 import com.wm.astroplay.view.MainActivity.Companion.TAG
+import com.wm.astroplay.view.RequestActivity
 import com.wm.astroplay.view.TermsActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -108,6 +109,10 @@ class ProfileFragment : Fragment() {
 
         binding.btnTerms.setOnClickListener {
             startActivity(Intent(this.requireContext(),TermsActivity::class.java))
+        }
+
+        binding.btnRequest.setOnClickListener {
+            startActivity(Intent(this.requireContext(),RequestActivity::class.java))
         }
 
         binding.versionInfo.setOnLongClickListener {

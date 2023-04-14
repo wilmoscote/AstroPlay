@@ -1,7 +1,9 @@
 package com.wm.astroplay.viewmodel
 
+import android.content.ClipDescription
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,10 +12,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.wm.astroplay.R
-import com.wm.astroplay.model.Movie
-import com.wm.astroplay.model.MovieProvider
-import com.wm.astroplay.model.Notification
-import com.wm.astroplay.model.UserPreferences
+import com.wm.astroplay.model.*
 import com.wm.astroplay.view.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +35,9 @@ class MoviesViewModel : ViewModel() {
     var searchingGenre = MutableLiveData<Boolean>()
     var userNotifications = MutableLiveData<List<Notification>>()
     var userFavorites = mutableListOf<Movie>()
+    var requestSent = MutableLiveData<Boolean>()
+    var loading = MutableLiveData<Boolean>()
+
     fun init(){
         viewModelScope.launch {
             fetchPopularMovies()
@@ -234,6 +236,29 @@ class MoviesViewModel : ViewModel() {
                 Log.d("AstroDebug","User NOT removed from notification")
                 // Error al eliminar el ID del usuario de la lista targetUsers
             }
+        }
+    }
+
+    suspend fun sendRequest(title: String, description: String?, currentUser: User) {
+        withContext(Dispatchers.IO){
+            loading.postValue(true)
+            val request = Request(
+                userId = currentUser.id.toString(),
+                userName = currentUser.name.toString(),
+                userEmail = currentUser.email.toString(),
+                title = title,
+                description = if (description?.isNotEmpty() == true) description else null
+            )
+
+            db.collection("requests").add(request)
+                .addOnSuccessListener {
+                    loading.postValue(false)
+                    requestSent.postValue(true)
+                }
+                .addOnFailureListener { _ ->
+                    loading.postValue(false)
+                    requestSent.postValue(false)
+                }
         }
     }
 }
