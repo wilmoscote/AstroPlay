@@ -13,5 +13,6 @@ data class User(
     val photo:String? = null,
     val favorites: List<String> = listOf(),
     val role: Int? = null,
-    val disabled: Boolean? = false
+    val disabled: Boolean? = false,
+    val createdAt: Long? = null
 )

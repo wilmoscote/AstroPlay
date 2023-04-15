@@ -143,7 +143,8 @@ class LoginActivity : AppCompatActivity() {
                                             (account?.photoUrl ?: "https://firebasestorage.googleapis.com/v0/b/astroplay.appspot.com/o/profiles%2Fdefault_user.webp?alt=media&token=706cc7a0-4e4d-4d81-b914-99e6c946ed30").toString(),
                                             listOf(),
                                             1,
-                                            false
+                                            false,
+                                            System.currentTimeMillis()
                                         )
                                         userRef.set(user)
                                             .addOnSuccessListener {
@@ -216,7 +217,8 @@ class LoginActivity : AppCompatActivity() {
                                             (account?.photoUrl ?: "https://firebasestorage.googleapis.com/v0/b/astroplay.appspot.com/o/profiles%2Fdefault_user.webp?alt=media&token=706cc7a0-4e4d-4d81-b914-99e6c946ed30").toString(),
                                             listOf(),
                                             1,
-                                            false
+                                            false,
+                                            System.currentTimeMillis()
                                         )
                                         lifecycleScope.launch {
                                             userPreferences.saveUser(user)

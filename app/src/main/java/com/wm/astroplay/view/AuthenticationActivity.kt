@@ -115,13 +115,13 @@ class AuthenticationActivity : AppCompatActivity() {
                                                 account.photoUrl.toString(),
                                                 listOf(),
                                                 1,
-                                                false
+                                                false,
+                                                System.currentTimeMillis()
                                             )
                                             userRef.set(user)
-                                                .addOnSuccessListener {
+                                                .addOnSuccessListener { _ ->
                                                     CoroutineScope(Dispatchers.IO).launch {
-                                                        document.toObject(User::class.java)
-                                                            ?.let { it1 -> userPreferences.saveUser(it1) }
+                                                        userPreferences.saveUser(user)
                                                         Log.d(TAG, "Usuario agregado exitosamente")
                                                         runOnUiThread {
                                                             binding.loading.isVisible = false
