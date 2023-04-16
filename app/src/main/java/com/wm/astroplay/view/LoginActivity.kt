@@ -1,8 +1,10 @@
 package com.wm.astroplay.view
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -27,12 +29,15 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var userPreferences: UserPreferences
     val db = Firebase.firestore
     private var isRegister = false
+    private var deviceId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
         userPreferences = UserPreferences(this)
+        deviceId = getDeviceId()
 
         binding.versionInfo.setOnLongClickListener {
             Toast.makeText(this, "\uD83D\uDC9B\uD83D\uDC99❤️", Toast.LENGTH_LONG).show()
@@ -143,6 +148,7 @@ class LoginActivity : AppCompatActivity() {
                                             (account?.photoUrl ?: "https://firebasestorage.googleapis.com/v0/b/astroplay.appspot.com/o/profiles%2Fdefault_user.webp?alt=media&token=706cc7a0-4e4d-4d81-b914-99e6c946ed30").toString(),
                                             listOf(),
                                             1,
+                                            deviceId ?: "",
                                             false,
                                             System.currentTimeMillis()
                                         )
@@ -217,6 +223,7 @@ class LoginActivity : AppCompatActivity() {
                                             (account?.photoUrl ?: "https://firebasestorage.googleapis.com/v0/b/astroplay.appspot.com/o/profiles%2Fdefault_user.webp?alt=media&token=706cc7a0-4e4d-4d81-b914-99e6c946ed30").toString(),
                                             listOf(),
                                             1,
+                                            deviceId ?: "",
                                             false,
                                             System.currentTimeMillis()
                                         )
@@ -258,6 +265,12 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
         }
+    }
+
+    @SuppressLint("HardwareIds")
+    private fun getDeviceId(): String {
+        val contentResolver = applicationContext.contentResolver
+        return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
     }
 
 }

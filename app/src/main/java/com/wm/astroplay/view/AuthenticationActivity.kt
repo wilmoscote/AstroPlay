@@ -1,9 +1,11 @@
 package com.wm.astroplay.view
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -14,6 +16,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -25,6 +28,7 @@ import com.wm.astroplay.databinding.ActivityAuthenticationBinding
 import com.wm.astroplay.model.User
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.viewmodel.AuthenticationViewModel
+import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,6 +45,7 @@ class AuthenticationActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var userPreferences: UserPreferences
     lateinit var account: GoogleSignInAccount
+    private var deviceId: String? = null
     val db = Firebase.firestore
     val TAG = "AstroDebug"
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +55,8 @@ class AuthenticationActivity : AppCompatActivity() {
         userPreferences = UserPreferences(this)
         CoroutineScope(Dispatchers.IO).launch {
             auth = Firebase.auth
+            deviceId = getDeviceId()
+            checkDeviceBlocked()
         }
         binding.btnLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
@@ -115,6 +122,7 @@ class AuthenticationActivity : AppCompatActivity() {
                                                 account.photoUrl.toString(),
                                                 listOf(),
                                                 1,
+                                                deviceId ?: "",
                                                 false,
                                                 System.currentTimeMillis()
                                             )
@@ -161,4 +169,43 @@ class AuthenticationActivity : AppCompatActivity() {
                 }
             }
         }
+
+    @SuppressLint("HardwareIds")
+    private fun getDeviceId(): String {
+        val contentResolver = applicationContext.contentResolver
+        return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+    }
+
+    private suspend fun checkDeviceBlocked(){
+        db.collection("blockedDevices").whereEqualTo("deviceId", getDeviceId()).get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    runOnUiThread {
+                        try {
+                            showBlockedDeviceInfo()
+                        } catch (e:Exception){
+                            //
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun showBlockedDeviceInfo() {
+        Blurry.with(this)
+            .radius(10)
+            .sampling(8)
+            .async()
+            .onto(binding.root)
+        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
+            .setTitle(getString(R.string.blocked_device_title))
+            .setMessage(getString(R.string.blocked_device_info))
+            .setPositiveButton(getString(R.string.understand)) { _, _ ->
+                finishAffinity()
+            }
+            .setCancelable(false)
+            .create()
+
+        dialog.show()
+    }
 }

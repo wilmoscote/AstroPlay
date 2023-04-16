@@ -88,4 +88,8 @@
     <string name="rate_sent">✅ Calificación enviada.</string>
     <string name="rate_sent_error">❌ Error al enviar calificación.</string>
     <string name="best_rated_title">Mejores calificadas</string>
+    <string name="info">Información</string>
+    <string name="cannot_request_mesage">Ya has agotado tus peticiones diarias, para realizar otra petición intentalo nuevamente mañana. ;)</string>
+    <string name="blocked_device_info">Lo sentimos, pero tu dispositivo ha sido bloqueado debido a acciones indebidas previas en nuestra aplicación. Si crees que esto es un error, por favor contacta a nuestro equipo de soporte para obtener más información y ayuda.</string>
+    <string name="blocked_device_title">Dispositivo bloqueado</string>
 </resources>

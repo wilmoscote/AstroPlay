@@ -138,6 +138,7 @@ class HomeFragment : Fragment() {
                     viewModel.fetchPopularMovies()
                     viewModel.fetchRecentsMovies()
                     viewModel.fetchRandomMovies()
+                    viewModel.fetchRatedMovies()
                 }
             } catch (e: Exception) {
                 //Log.e("SaludDebug", e.message.toString())
@@ -195,5 +196,4 @@ class HomeFragment : Fragment() {
         }
         return binding.root
     }
-
 }

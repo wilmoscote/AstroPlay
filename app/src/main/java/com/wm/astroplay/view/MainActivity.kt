@@ -1,6 +1,7 @@
 package com.wm.astroplay.view
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
     private val favoritesFragment = FavoritesFragment()
     private val exploreFragment = ExploreFragment()
     private val notificationsFragment = NotificationsFragment()
-
+    private val db = Firebase.firestore
     private lateinit var userPreferences: UserPreferences
     var doubleBackToExitPressedOnce = false
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -176,6 +178,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                         }
                     }
                 }
+            checkDeviceBlocked()
         }
     }
 
@@ -196,8 +199,11 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                         userPreferences.saveUser(user)
                     }
                     if (user.disabled == true){
-
-                        showAccountDisabledDialog()
+                        try {
+                            showAccountDisabledDialog()
+                        } catch (e:Exception){
+                            finish()
+                        }
                     }
                 }
             }
@@ -225,7 +231,6 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
             .create()
 
         dialog.show()
-
     }
 
     private fun forceUpdate() {
@@ -306,5 +311,44 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                 binding.bottomNavigation.selectedItemId = R.id.profilePage
             }
         }
+    }
+
+    @SuppressLint("HardwareIds")
+    private fun getDeviceId(): String {
+        val contentResolver = applicationContext.contentResolver
+        return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+    }
+
+    private suspend fun checkDeviceBlocked(){
+        db.collection("blockedDevices").whereEqualTo("deviceId", getDeviceId()).get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    runOnUiThread {
+                        showBlockedDeviceInfo()
+                    }
+                }
+            }
+    }
+
+    private fun showBlockedDeviceInfo() {
+        Blurry.with(this)
+            .radius(10)
+            .sampling(8)
+            .async()
+            .onto(binding.root)
+        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
+            .setTitle(getString(R.string.blocked_device_title))
+            .setMessage(getString(R.string.blocked_device_info))
+            .setPositiveButton(getString(R.string.understand)) { _, _ ->
+                Firebase.auth.signOut()
+                CoroutineScope(Dispatchers.IO).launch {
+                    userPreferences.clearDataStore()
+                    finishAffinity()
+                }
+            }
+            .setCancelable(false)
+            .create()
+
+        dialog.show()
     }
 }

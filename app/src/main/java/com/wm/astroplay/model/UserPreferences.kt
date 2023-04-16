@@ -28,6 +28,10 @@ class UserPreferences(private val context: Context) {
         preferences[longPreferencesKey(movieId)]
     }
 
+    fun getLastRequestTime() = dataStore.data.map { preferences ->
+        preferences[longPreferencesKey("last_request_time")]
+    }
+
     fun getUserTheme() = dataStore.data.map { preferences ->
         preferences[booleanPreferencesKey("theme")]
     }
@@ -58,6 +62,13 @@ class UserPreferences(private val context: Context) {
             preferences[longPreferencesKey(movieId)] = position
         }
     }
+
+    suspend fun saveLastRequestTime(time: Long) {
+        dataStore.edit { preferences ->
+            preferences[longPreferencesKey("last_request_time")] = time
+        }
+    }
+
 
     suspend fun saveUser(user: User) {
         val jsonString = Json.encodeToString(User.serializer(), user)

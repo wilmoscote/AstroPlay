@@ -32,7 +32,7 @@
             android:name=".view.PlayActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".view.MovieDetailActivity"
             android:exported="false" />
