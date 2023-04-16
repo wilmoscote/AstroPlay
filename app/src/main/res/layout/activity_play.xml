@@ -93,6 +93,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+
+    <ImageView
+        android:id="@+id/btnClose"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:textColor="@color/palette_white"
+        android:background="?attr/selectableItemBackground"
+        app:srcCompat="@drawable/ic_close"
+        android:layout_margin="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/loading"
         android:layout_width="100dp"

@@ -163,6 +163,15 @@ class HomeFragment : Fragment() {
             binding.popularMoviesViewLoading.isVisible = false
         }
 
+        viewModel.ratedMovieList.observe(viewLifecycleOwner) { movies ->
+            val movieAdapter = MovieAdapter(movies)
+            binding.ratedMoviesView.adapter = movieAdapter
+            binding.ratedMoviesView.layoutManager =
+                LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            binding.ratedMoviesView.isVisible = true
+            binding.ratedMoviesViewLoading.isVisible = false
+        }
+
         viewModel.recentMovieList.observe(viewLifecycleOwner) { movies ->
             val movieAdapter = MovieAdapter(movies)
             binding.recentMoviesView.adapter = movieAdapter

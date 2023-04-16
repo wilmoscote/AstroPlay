@@ -8,6 +8,9 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.RatingBar
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -17,6 +20,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -140,7 +144,7 @@ class MovieDetailActivity : AppCompatActivity() {
         val genres = movie?.genre?.joinToString(", ") ?: "N/A"
         binding.movieGenres.text = genres
 
-        binding.movieSynopsis.text = movie?.plot
+        binding.movieSynopsis.text = movie?.plot + " (${movie?.year})"
         binding.txtDirector.text = getString(R.string.director_text, movie?.director)
         val cast = movie?.actors?.joinToString(", ") ?: "N/A"
         binding.txtCast.text = getString(R.string.cast_text, cast)
@@ -181,6 +185,10 @@ class MovieDetailActivity : AppCompatActivity() {
                     )
                 }
             }
+        }
+
+        binding.btnRate.setOnClickListener {
+            showRatingDialog()
         }
 
         binding.btnBack.setOnClickListener {
@@ -274,6 +282,37 @@ class MovieDetailActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun showRatingDialog() {
+        // Infla el layout del diálogo de calificación
+        val inflater = LayoutInflater.from(this)
+        val ratingDialogView = inflater.inflate(R.layout.rating_dialog, null)
+
+        // Obtiene una referencia al RatingBar
+        val ratingBar: RatingBar = ratingDialogView.findViewById(R.id.rating_bar)
+
+        // Crea y muestra el MaterialAlertDialog
+        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
+            .setTitle(getString(R.string.rate_movie_title))
+            .setView(ratingDialogView)
+            .setPositiveButton(getString(R.string.rate_movie)) { _, _ ->
+                val userRating = ratingBar.rating
+
+                lifecycleScope.launch {
+                    try {
+                        viewModel.saveRating(user?.id ?: "", movie?.id ?: movie?.title.toString(), userRating)
+                        Toast.makeText(this@MovieDetailActivity, getString(R.string.rate_sent), Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@MovieDetailActivity, getString(R.string.rate_sent_error), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
 
     override fun onResume() {
         super.onResume()

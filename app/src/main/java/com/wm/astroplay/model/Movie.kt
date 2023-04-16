@@ -12,6 +12,7 @@ import java.util.*
 @Serializable
 @Parcelize
 data class Movie(
+    val id: String? = null,
     val title: String = "",
     val originalTitle: String? = null,
     val year: String? = null,
@@ -22,11 +23,12 @@ data class Movie(
     val plot: String? = null,
     val poster: String? = null,
     val imdbRating: String? = null,
-    val appRating: String? = null,
+    val appRating: Float? = null,
     val views: Int? = null,
     val language: String? = null,
     val ageRating: String? = null,
     val url: String = "",
+    val numVotes: Int? = null,
     @Serializable(with = TimestampSerializer::class)
     val createdAt: Timestamp? = null
 ) : Parcelable

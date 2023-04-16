@@ -165,9 +165,14 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                 .addOnCompleteListener(this@MainActivity) { task ->
                     if (task.isSuccessful) {
                         val appVersion = Firebase.remoteConfig.getDouble("version")
-                        //Log.d(TAG, appVersion.toString())
+                        val appDisabled = Firebase.remoteConfig.getBoolean("app_disabled")
+                        Log.d(TAG, appVersion.toString())
                         if (appVersion.toInt() > BuildConfig.VERSION_CODE) {
                             forceUpdate()
+                        }
+                        Log.d(TAG, appDisabled.toString())
+                        if(appDisabled){
+                            showAppDisableDialog()
                         }
                     }
                 }
@@ -253,6 +258,19 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
             }
             finish()
         }
+        dialog.show()
+    }
+
+    private fun showAppDisableDialog() {
+        Blurry.with(this)
+            .radius(10)
+            .sampling(8)
+            .async()
+            .onto(binding.root)
+        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
+            .setTitle(getString(R.string.app_disabled_title))
+            .setMessage(getString(R.string.app_disabled_message))
+        dialog.setCancelable(false)
         dialog.show()
     }
 

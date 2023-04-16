@@ -27,6 +27,7 @@ import com.wm.astroplay.R
 import com.wm.astroplay.databinding.FragmentProfileBinding
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.view.AuthenticationActivity
+import com.wm.astroplay.view.EditProfileActivity
 import com.wm.astroplay.view.MainActivity.Companion.TAG
 import com.wm.astroplay.view.RequestActivity
 import com.wm.astroplay.view.TermsActivity
@@ -88,6 +89,9 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        binding.btnEditProfile.setOnClickListener {
+            startActivity(Intent(this.requireContext(), EditProfileActivity::class.java))
+        }
 
         binding.btnLogout.setOnClickListener {
             MaterialAlertDialogBuilder(this.requireContext(),R.style.MaterialAlertDialog_rounded)

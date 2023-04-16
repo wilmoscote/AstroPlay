@@ -241,6 +241,52 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/sectionBestRated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="@string/best_rated_title"
+                        android:textColor="@color/palette_white"
+                        android:textSize="18sp" />
+
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/ratedMoviesViewLoading"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@+id/banner"
+                        app:shimmer_auto_start="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <include layout="@layout/movie_card_loading" />
+
+                            <include layout="@layout/movie_card_loading" />
+
+                            <include layout="@layout/movie_card_loading" />
+
+                            <include layout="@layout/movie_card_loading" />
+                        </LinearLayout>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/ratedMoviesView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="50dp"
                     android:orientation="vertical">
 

@@ -6,6 +6,7 @@ object MovieProvider {
     fun getMovies(): List<Movie> {
         return listOf(
             Movie(
+                id = "",
                 title = "Pantera Negra: Wakanda por siempre",
                 originalTitle = "Black Panther: Wakanda Forever",
                 year = "2022",
@@ -16,11 +17,12 @@ object MovieProvider {
                 plot = "El pueblo de Wakanda lucha para proteger su hogar de las potencias mundiales interventoras mientras lloran la muerte de su rey T'Challa.",
                 poster = "https://firebasestorage.googleapis.com/v0/b/astroplay.appspot.com/o/covers%2Fblackpantherwakandaforever.jpg?alt=media&token=d28cba58-2b3b-4d0d-b090-38595461a112",
                 imdbRating = "6.7",
-                appRating = "4.5",
+                appRating = 4f,
                 views = 1,
                 language = "Español",
                 ageRating = "B",
                 "https://firebasestorage.googleapis.com/v0/b/astroplay.appspot.com/o/movies%2Fblackpantherwakandaforever.mp4?alt=media&token=a814a37a-a87d-4b10-a582-d3750254827c",
+                0,
                 createdAt = Timestamp.now(),
             ),
         )
@@ -63,7 +65,7 @@ object MovieProvider {
             "Romance",
             "Ciencia ficción",
             "Deportes",
-            "Suspense",
+            "Suspenso",
             "Guerra"
         )
     }

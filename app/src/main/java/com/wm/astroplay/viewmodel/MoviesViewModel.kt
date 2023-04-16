@@ -29,6 +29,7 @@ class MoviesViewModel : ViewModel() {
     var popularMovieList = MutableLiveData<List<Movie>>()
     var recentMovieList = MutableLiveData<List<Movie>>()
     var randomMovieList = MutableLiveData<List<Movie>>()
+    var ratedMovieList = MutableLiveData<List<Movie>>()
     var searchResult = MutableLiveData<List<Movie>>()
     var searchGenreResult = MutableLiveData<List<Movie>>()
     var searching = MutableLiveData<Boolean>()
@@ -43,6 +44,7 @@ class MoviesViewModel : ViewModel() {
             fetchPopularMovies()
             fetchRecentsMovies()
             fetchRandomMovies()
+            fetchRatedMovies()
         }
     }
     private suspend fun getMovies(){
@@ -111,6 +113,25 @@ class MoviesViewModel : ViewModel() {
             doc.toObject(Movie::class.java)
         }
         randomMovieList.postValue(randomMovies.shuffled().take(numberOfMovies))
+    }
+
+    suspend fun fetchRatedMovies() {
+        return withContext(Dispatchers.IO) {
+            db.collection("movies")
+                .orderBy("appRating", Query.Direction.DESCENDING)
+                .limit(10)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    val movies = querySnapshot.documents.mapNotNull { document ->
+                        document.toObject(Movie::class.java)
+                    }
+                    //Log.d(TAG, "Movies fetched. ${querySnapshot.documents.toString()}")
+                    ratedMovieList.postValue(movies)
+                }
+                .addOnFailureListener { exception ->
+                    //Log.w(TAG, "Error al obtener las películas.", exception)
+                }
+        }
     }
 
 
@@ -261,5 +282,41 @@ class MoviesViewModel : ViewModel() {
                 }
         }
     }
+
+    suspend fun saveRating(userId: String, movieId: String, userRating: Float) {
+        // Obtén la referencia a la colección de calificaciones y películas
+        val ratingsCollection = db.collection("ratings")
+        val moviesCollection = db.collection("movies")
+
+        // Verifica si el usuario ya calificó la película
+        val existingRating = ratingsCollection
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("movieId", movieId)
+            .get()
+            .await()
+            .documents.firstOrNull()
+
+        // Si ya calificó, actualiza la calificación. Si no, crea una nueva.
+        if (existingRating != null) {
+            ratingsCollection.document(existingRating.id).update("rating", userRating)
+        } else {
+            val newRating = Rating(userId, movieId, userRating)
+            ratingsCollection.add(newRating)
+        }
+
+        // Calcula el nuevo rating promedio
+        val allRatings = ratingsCollection
+            .whereEqualTo("movieId", movieId)
+            .get()
+            .await()
+
+        val sum = allRatings.documents.sumByDouble { it.getDouble("rating") ?: 0.0 }
+        val count = allRatings.documents.size
+        val averageRating = sum / count
+
+        // Actualiza el rating promedio y el número de votos en la película
+        moviesCollection.document(movieId).update("appRating", averageRating, "numVotes", count)
+    }
+
 }
 

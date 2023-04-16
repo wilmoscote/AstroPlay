@@ -17,6 +17,9 @@
         android:theme="@style/Theme.AstroPlay"
         tools:targetApi="31">
         <activity
+            android:name=".view.EditProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.RequestActivity"
             android:exported="false" />
         <activity
@@ -60,7 +63,7 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_person" />
+            android:resource="@drawable/default_user" />
         <!--
  Set color used with incoming notification messages. This is used when no color is set for the incoming
              notification message. See README(https://goo.gl/6BKBk7) for more.

@@ -75,4 +75,17 @@
     <string name="request_activity_info">Utiliza este formulario para solicitar una película o serie que desees ver en nuestra app. Revisaremos tu solicitud a la brevedad y nos esforzaremos por agregar el contenido solicitado lo más pronto posible. Recuerda que solo puedes realizar una solicitud por día. ¡Gracias por ayudarnos a mejorar nuestra selección!</string>
     <string name="love_message">Hecho con ❤️ por AstroPlay</string>
     <string name="description_field">Descripción (Opcional)</string>
+    <string name="profile_updated_success">✅ Usuario actualizado.</string>
+    <string name="error_default">Ha ocurrido un error: %s</string>
+    <string name="new_name_error">Escriba un nombre válido.</string>
+    <string name="edit_profile_title">Editar Perfil</string>
+    <string name="name_field">Nombre</string>
+    <string name="save_changes">Guardar cambios</string>
+    <string name="app_disabled_title">Mantenimiento</string>
+    <string name="app_disabled_message">La aplicación está en mantenimiento y no está disponible en este momento. Volveremos pronto. ¡Gracias por tu paciencia!</string>
+    <string name="rate_movie_title">CALIFICAR PELICULA</string>
+    <string name="rate_movie">CALIFICAR</string>
+    <string name="rate_sent">✅ Calificación enviada.</string>
+    <string name="rate_sent_error">❌ Error al enviar calificación.</string>
+    <string name="best_rated_title">Mejores calificadas</string>
 </resources>

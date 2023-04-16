@@ -62,6 +62,9 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
                 binding.movieTitleText.text = movie?.title.toString()
             }
         }
+        binding.btnClose.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
         try {
             window.addFlags(
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
@@ -151,6 +154,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
             // Controla la visibilidad de los controles del reproductor
             binding.brightControls.isVisible = visibility == View.VISIBLE
             binding.movieTitleText.isVisible = visibility == View.VISIBLE
+            binding.btnClose.isVisible = visibility == View.VISIBLE
         }
 
     private fun setScreenBrightness(value: Int){
