@@ -57,7 +57,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
             intent.getParcelableExtra<Movie>("movie")
         }
         CoroutineScope(Dispatchers.IO).launch {
-            viewModel.incrementMovieViews(movie?.title.toString())
+            viewModel.incrementMovieViews(movie?.id ?: movie?.title.toString())
             runOnUiThread {
                 binding.movieTitleText.text = movie?.title.toString()
             }

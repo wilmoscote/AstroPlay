@@ -15,4 +15,6 @@
     <color name="palette_white">#EDEDED</color>
     <color name="palette_white_down">#A3A2A2</color>
     <color name="palette_yellow">#F6C90E</color>
+    <color name="palette_green">#81C784</color>
+
 </resources>
