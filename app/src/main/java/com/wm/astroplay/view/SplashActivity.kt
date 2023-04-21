@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.ktx.auth
@@ -23,6 +24,7 @@ import com.wm.astroplay.model.UserPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -39,49 +41,43 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val screenSplash = installSplashScreen()
         super.onCreate(savedInstanceState)
-
-        screenSplash.setKeepOnScreenCondition{true}
+        screenSplash.setKeepOnScreenCondition { true }
         FirebaseApp.initializeApp(applicationContext)
         Firebase.messaging.isAutoInitEnabled = true
         userPreferences = UserPreferences(this)
         askNotificationPermission()
-        CoroutineScope(Dispatchers.IO).launch {
-            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
 
-                    return@OnCompleteListener
-                }
-                // Get new FCM registration token
-                val token = task.result
-
-                // Log and toast
-                Log.d("AstroDebug", token)
-            })
+        lifecycleScope.launch(Dispatchers.IO) {
+            runCatching { FirebaseMessaging.getInstance().token.await() }
+                .onSuccess { token -> Log.d("AstroDebug", token) }
+                .onFailure { /* Handle failure here, if necessary */ }
         }
+
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        if(Firebase.auth.currentUser != null){
-            startActivity(Intent(this,MainActivity::class.java))
-            finish()
-        } else {
-            startActivity(Intent(this,AuthenticationActivity::class.java))
-            finish()
+
+        Firebase.auth.currentUser?.let {
+            startActivity(Intent(this, MainActivity::class.java))
+        } ?: run {
+            startActivity(Intent(this, AuthenticationActivity::class.java))
         }
+        finish()
     }
 
     private fun askNotificationPermission() {
         // This is only necessary for API level >= 33 (TIRAMISU)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-                PackageManager.PERMISSION_GRANTED
-            ) {
-                // FCM SDK (and your app) can post notifications.
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                //
-            } else {
-                // Directly ask for the permission
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            when {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED -> {
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    //
+                }
+                else -> {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
         }
     }
+
 
 }

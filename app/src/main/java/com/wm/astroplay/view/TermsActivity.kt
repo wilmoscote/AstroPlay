@@ -2,6 +2,7 @@ package com.wm.astroplay.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import com.wm.astroplay.databinding.ActivityTermsBinding
@@ -12,12 +13,15 @@ class TermsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityTermsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.webView.webViewClient = WebViewClient()
-        binding.webView.settings.javaScriptEnabled = true
+
+        binding.webView.apply {
+            webViewClient = WebViewClient()
+            settings.javaScriptEnabled = true
+            settings.cacheMode = WebSettings.LOAD_DEFAULT
+        }
 
         val pdfUrl = "https://drive.google.com/file/d/1Rz7gOmUYx2lfRE_Toe9PxmWpAbjNiqqH/view"
-
-        binding.webView.loadUrl("https://drive.google.com/file/d/1Rz7gOmUYx2lfRE_Toe9PxmWpAbjNiqqH/view")
+        binding.webView.loadUrl(pdfUrl)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -30,4 +34,5 @@ class TermsActivity : AppCompatActivity() {
             }
         })
     }
+
 }

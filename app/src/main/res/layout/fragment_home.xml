@@ -79,75 +79,11 @@
                     app:srcCompat="@drawable/ic_circle_notify" />
             </RelativeLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                app:boxBackgroundColor="#444444"
-                app:boxCornerRadiusBottomEnd="15dp"
-                app:boxCornerRadiusBottomStart="15dp"
-                app:boxCornerRadiusTopEnd="15dp"
-                app:boxCornerRadiusTopStart="15dp"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
-                app:endIconMode="clear_text"
-                app:hintEnabled="false"
-                app:startIconDrawable="@drawable/ic_search"
-                app:startIconTint="#EDEDED">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/textSearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="15dp"
-                    android:fontFamily="@font/poppins"
-                    android:hint="@string/search_movie"
-                    android:imeOptions="actionSearch"
-                    android:inputType="textCapSentences"
-                    android:padding="12dp"
-                    android:textColor="@color/palette_white" />
-            </com.google.android.material.textfield.TextInputLayout>
-            <LinearLayout
-                android:id="@+id/searchMovieLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/searchTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:fontFamily="@font/poppins_bold"
-                    android:text="@string/search_movie_title"
-                    android:gravity="center_horizontal"
-                    android:textColor="@color/palette_white"
-                    android:textSize="18sp" />
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/searching"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:visibility="gone"
-                    app:lottie_rawRes="@raw/loading"
-                    app:lottie_autoPlay="true"
-                    app:lottie_loop="true"
-                    android:scaleType="fitXY"
-                    android:layout_gravity="center_horizontal"
-                    />
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/moviesResultView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:scrollbars="vertical"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="2" />
-            </LinearLayout>
-
             <LinearLayout
                 android:id="@+id/homeFeedLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:orientation="vertical">
 
                 <LinearLayout

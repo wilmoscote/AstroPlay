@@ -48,15 +48,15 @@ class LoginActivity : AppCompatActivity() {
             val email = binding.txtEmail.text.toString().trim()
             val password = binding.txtPass.text.toString().trim()
 
-            if(email.isEmpty() || !isValidEmail(email)){
+            if (email.isEmpty() || !isValidEmail(email)) {
                 binding.txtEmail.error = getString(R.string.email_error)
                 binding.txtEmail.requestFocus()
-            }else if(password.isEmpty()){
+            } else if (password.isEmpty()) {
                 binding.txtPass.error = getString(R.string.pass_error)
                 binding.txtPass.requestFocus()
-            }else{
-                CoroutineScope(Dispatchers.IO).launch {
-                    runOnUiThread {
+            } else {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    withContext(Dispatchers.Main) {
                         binding.loading.isVisible = true
                     }
                     signIn(email, password)
@@ -78,9 +78,9 @@ class LoginActivity : AppCompatActivity() {
             if (email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()) {
                 if (isValidEmail(email)) {
                     if (password == confirmPassword) {
-                        CoroutineScope(Dispatchers.IO).launch {
+                        lifecycleScope.launch(Dispatchers.IO) {
                             registerUser(email, password)
-                            runOnUiThread {
+                            withContext(Dispatchers.Main) {
                                 binding.loading.isVisible = true
                             }
                         }
@@ -93,7 +93,7 @@ class LoginActivity : AppCompatActivity() {
                     binding.txtEmailRegister.requestFocus()
                 }
             } else {
-                Toast.makeText(this@LoginActivity,getString(R.string.empty_fields_error),Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, getString(R.string.empty_fields_error), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -105,6 +105,7 @@ class LoginActivity : AppCompatActivity() {
 
         binding.versionInfo.text = getString(R.string.version_info, BuildConfig.VERSION_NAME)
     }
+
 
     private fun isValidEmail(email: String): Boolean {
         val emailPattern = "^[A-Za-z\\d._%+-]+@[A-Za-z\\d.-]+\\.[A-Z]{2,6}$"

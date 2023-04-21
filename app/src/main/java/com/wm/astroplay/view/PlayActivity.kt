@@ -31,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 class PlayActivity : AppCompatActivity(), Player.Listener {
@@ -51,39 +52,42 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
         userPreferences = UserPreferences(applicationContext)
+
         movie = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra("movie", Movie::class.java)
         } else {
             intent.getParcelableExtra<Movie>("movie")
         }
-        CoroutineScope(Dispatchers.IO).launch {
+
+        lifecycleScope.launch(Dispatchers.IO) {
             viewModel.incrementMovieViews(movie?.id ?: movie?.title.toString())
-            runOnUiThread {
+            withContext(Dispatchers.Main) {
                 binding.movieTitleText.text = movie?.title.toString()
             }
         }
+
         binding.btnClose.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-        try {
-            window.addFlags(
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                        or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                        or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-            )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val controller = window.insetsController
-                if (controller != null) {
-                    controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                    controller.systemBarsBehavior =
-                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                }
 
-            } else {
-                window.decorView.systemUiVisibility = getSystemUiVisibility()
-                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        try {
+            window.apply {
+                addFlags(
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                            or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                            or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    insetsController?.let { controller ->
+                        controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                        controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    }
+                } else {
+                    decorView.systemUiVisibility = getSystemUiVisibility()
+                    setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                }
             }
-        } catch (e: Exception){
+        } catch (e: Exception) {
             //
         }
 
@@ -102,28 +106,30 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
                         val dy = startY - rawY
 
                         val increase = dy > 0
-                        val newValue = if(increase) brightness + 1 else brightness - 1
+                        val newValue = if (increase) brightness + 1 else brightness - 1
                         if (newValue in 0..30) brightness = newValue
 
                         setScreenBrightness(brightness)
-                        Log.d(TAG,"Adjuts brigh: $brightness")
                     }
                     MotionEvent.ACTION_UP -> {
                         //view.performClick()
                     }
                 }
-            } catch (e:Exception){
-                Log.e(TAG,"Error: ${e.message.toString()}")
-            }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error: ${e.message.toString()}")
+            }//
             true
         }
-        CoroutineScope(Dispatchers.IO).launch {
+
+        lifecycleScope.launch(Dispatchers.IO) {
             userPreferences.getMoviePlaybackPosition(movie?.title.toString()).collect { time ->
                 isResumingMovie = time != null
             }
         }
+
         preparePlayer()
     }
+
 
     private fun preparePlayer() {
         // Crear y configurar el reproductor ExoPlayer

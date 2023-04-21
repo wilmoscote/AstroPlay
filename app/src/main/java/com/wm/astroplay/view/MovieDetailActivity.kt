@@ -54,13 +54,14 @@ class MovieDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         userPreferences = UserPreferences(this)
         firebaseAnalytics = Firebase.analytics
-        // Recibe el objeto de la película desde el Intent
+
         movie = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra("movie", Movie::class.java)
         } else {
             intent.getParcelableExtra<Movie>("movie")
         }
-        CoroutineScope(Dispatchers.IO).launch {
+
+        lifecycleScope.launch(Dispatchers.IO) {
             userPreferences.getUser().collect { currentUser ->
                 user = currentUser
                 if ((user?.role ?: 1) < 2) {
@@ -74,7 +75,7 @@ class MovieDetailActivity : AppCompatActivity() {
                         val parameters = Bundle().apply {
                             this.putString("action", "play_movie")
                         }
-                        firebaseAnalytics.logEvent("movie_detail",parameters)
+                        firebaseAnalytics.logEvent("movie_detail", parameters)
                         if ((user?.role ?: 1) < 2) {
                             showMovieAd(false)
                         } else {
@@ -89,9 +90,7 @@ class MovieDetailActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
 
-        CoroutineScope(Dispatchers.IO).launch {
             userPreferences.getFavorites().collect { favorites ->
                 userFavorites = favorites.toMutableList()
                 isFavorite = favorites.any { it.title == (movie?.title) }
@@ -99,12 +98,14 @@ class MovieDetailActivity : AppCompatActivity() {
                     "AstroDebug",
                     "isFavorite ${isFavorite.toString()} Favorite list: ${favorites.toString()}"
                 )
-                if (isFavorite) binding.btnFavorite.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        this@MovieDetailActivity,
-                        R.drawable.ic_favorite_added
+                withContext(Dispatchers.Main) {
+                    if (isFavorite) binding.btnFavorite.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this@MovieDetailActivity,
+                            R.drawable.ic_favorite_added
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -153,16 +154,15 @@ class MovieDetailActivity : AppCompatActivity() {
 
         // Establece el OnClickListener para el icono de favoritos
         binding.btnFavorite.setOnClickListener {
-            //viewModel.toggleFavoriteMovie(applicationContext,user?.id ?: "", movie!!)
-            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 if (isFavorite) {
                     userFavorites.removeAll { movieToDelete -> movieToDelete.title == movie?.title }
                     userPreferences.saveFavorites(userFavorites)
                     val parameters = Bundle().apply {
                         this.putString("action", "removed")
                     }
-                    firebaseAnalytics.logEvent("menu_favorites",parameters)
-                    runOnUiThread {
+                    firebaseAnalytics.logEvent("menu_favorites", parameters)
+                    withContext(Dispatchers.Main) {
                         binding.btnFavorite.setImageDrawable(
                             ContextCompat.getDrawable(
                                 this@MovieDetailActivity,
@@ -176,13 +176,15 @@ class MovieDetailActivity : AppCompatActivity() {
                     val parameters = Bundle().apply {
                         this.putString("action", "added")
                     }
-                    firebaseAnalytics.logEvent("menu_favorites",parameters)
-                    binding.btnFavorite.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            this@MovieDetailActivity,
-                            R.drawable.ic_favorite_added
+                    firebaseAnalytics.logEvent("menu_favorites", parameters)
+                    withContext(Dispatchers.Main) {
+                        binding.btnFavorite.setImageDrawable(
+                            ContextCompat.getDrawable(
+                                this@MovieDetailActivity,
+                                R.drawable.ic_favorite_added
+                            )
                         )
-                    )
+                    }
                 }
             }
         }

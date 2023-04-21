@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.wm.astroplay.R
@@ -21,6 +22,7 @@ import com.wm.astroplay.viewmodel.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 class EditProfileActivity : AppCompatActivity() {
@@ -47,17 +49,18 @@ class EditProfileActivity : AppCompatActivity() {
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
         userPreferences = UserPreferences(this)
-        CoroutineScope(Dispatchers.IO).launch {
+
+        lifecycleScope.launch(Dispatchers.IO) {
             userPreferences.getUser().collect { user ->
                 currentUser = user
                 imageUrl = user?.photo ?: ""
-                runOnUiThread {
+                withContext(Dispatchers.Main) {
                     try {
                         Glide.with(this@EditProfileActivity).load(user?.photo).circleCrop().transition(
                             DrawableTransitionOptions.withCrossFade())
                             .error(R.drawable.default_user).into(binding.profileImage)
                         binding.usernameEditText.setText(user?.name)
-                    } catch (e: Exception){
+                    } catch (e: Exception) {
                         //
                     }
                 }
@@ -72,22 +75,22 @@ class EditProfileActivity : AppCompatActivity() {
             val newName = binding.usernameEditText.text.toString()
 
             if (newName.isNotBlank()) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    if(currentUser != null){
-                        viewModel.updateProfile(currentUser!!, imageUri, newName)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    currentUser?.let {
+                        viewModel.updateProfile(it, imageUri, newName)
                     }
                 }
             } else {
-                Toast.makeText(this@EditProfileActivity,getString(R.string.new_name_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@EditProfileActivity, getString(R.string.new_name_error), Toast.LENGTH_SHORT).show()
             }
         }
 
-        viewModel.userUpdated.observe(this){
-            Toast.makeText(this@EditProfileActivity,getString(R.string.profile_updated_success), Toast.LENGTH_SHORT).show()
+        viewModel.userUpdated.observe(this) {
+            Toast.makeText(this@EditProfileActivity, getString(R.string.profile_updated_success), Toast.LENGTH_SHORT).show()
             finish()
         }
 
-        viewModel.loading.observe(this){ isLoading ->
+        viewModel.loading.observe(this) { isLoading ->
             binding.loading.isVisible = isLoading
         }
     }

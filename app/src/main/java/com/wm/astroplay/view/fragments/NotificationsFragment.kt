@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -55,67 +57,83 @@ class NotificationsFragment : Fragment(), NotificationInterface {
     ): View {
         binding = FragmentNotificationsBinding.inflate(layoutInflater)
         userPreferences = UserPreferences(this.requireContext())
-        lifecycleScope.launch(Dispatchers.IO) {
-            userPreferences.getUser().collect { user ->
-                currentUser = user
-                withContext(Dispatchers.Main){
-                    try {
-                        Glide.with(this@NotificationsFragment).load(user?.photo).circleCrop()
-                            .error(R.drawable.default_user).into(binding.profileImg)
 
+        setupProfileImage()
 
-                    } catch (e:Exception){
-                        //
-                    }
+        setupBackButton()
+
+        observeUserNotifications()
+
+        return binding.root
+    }
+
+    private fun setupProfileImage() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userPreferences.getUser().collect { user ->
+                    currentUser = user
+                    loadProfileImage(user)
+                    viewModel.getUserNotifications(user?.id ?: "")
                 }
-                viewModel.getUserNotifications(user?.id ?: "")
             }
         }
+    }
 
+    private fun loadProfileImage(user: User?) {
+        Glide.with(this@NotificationsFragment).load(user?.photo).circleCrop()
+            .error(R.drawable.default_user).into(binding.profileImg)
+        binding.profileImg.setOnClickListener {
+            navigationListener?.onNavigateTo("profile")
+        }
+    }
+
+    private fun setupBackButton() {
         binding.btnBack.setOnClickListener {
             navigationListener?.onNavigateTo("home")
         }
+    }
 
-        viewModel.userNotifications.observe(viewLifecycleOwner){ notifications ->
-            if (notifications.isNotEmpty()){
-                val notificationsAdapter = NotificationAdapter(notifications.toMutableList(),this)
-                binding.rvNotifications.adapter = notificationsAdapter
-                binding.rvNotifications.layoutManager =
-                    LinearLayoutManager(this.requireContext(), LinearLayoutManager.VERTICAL, false)
-                val swipeHandler = SwipeToDeleteCallback(notificationsAdapter) { position ->
-                    // Aquí puedes realizar la petición a Firestore para eliminar al usuario
-                    // de la lista de targetUsers de la notificación
-                    try {
-                        val notificationId = notificationsAdapter.getNotificationIdAt(position)
-                        //removeFromTargetUsers(notificationId)
-                        CoroutineScope(Dispatchers.IO).launch {
-                            if (currentUser != null){
-                                viewModel.removeUserFromNotificationTarget(currentUser?.id.toString(),
-                                    notificationId.toString()
-                                )
-                            }
-                        }
-                        Log.d("AstroDebug","Notificacion eliminada!")
-                    } catch (e:Exception){
-                        //
-                    }
-
-                    notificationsAdapter.removeNotificationAt(position)
-                }
-                val itemTouchHelper = ItemTouchHelper(swipeHandler)
-                itemTouchHelper.attachToRecyclerView(binding.rvNotifications)
-            } else{
+    private fun observeUserNotifications() {
+        viewModel.userNotifications.observe(viewLifecycleOwner) { notifications ->
+            if (notifications.isNotEmpty()) {
+                setupNotificationsRecyclerView(notifications)
+            } else {
                 binding.rvNotifications.isVisible = false
                 binding.emptyNotificationLayout.isVisible = true
             }
         }
+    }
 
+    private fun setupNotificationsRecyclerView(notifications: List<Notification>) {
+        val notificationsAdapter = NotificationAdapter(notifications.toMutableList(), this)
+        binding.rvNotifications.apply {
+            adapter = notificationsAdapter
+            layoutManager = LinearLayoutManager(this@NotificationsFragment.requireContext(), LinearLayoutManager.VERTICAL, false)
+        }
+
+        val swipeHandler = SwipeToDeleteCallback(notificationsAdapter) { position ->
+            handleNotificationDeletion(position, notificationsAdapter)
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(binding.rvNotifications)
+    }
+
+    private fun handleNotificationDeletion(position: Int, notificationsAdapter: NotificationAdapter) {
+        val notificationId = notificationsAdapter.getNotificationIdAt(position)
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (currentUser != null) {
+                viewModel.removeUserFromNotificationTarget(currentUser?.id.toString(), notificationId.toString())
+            }
+        }
+        notificationsAdapter.removeNotificationAt(position)
+    }
+
+    private fun setupProfileImageClickListener() {
         binding.profileImg.setOnClickListener {
             navigationListener?.onNavigateTo("profile")
         }
-
-        return binding.root
     }
+
 
     override fun onItemDeleted(notification: Notification) {
         CoroutineScope(Dispatchers.IO).launch {

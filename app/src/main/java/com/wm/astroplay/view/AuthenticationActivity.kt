@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -32,6 +33,7 @@ import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -53,57 +55,53 @@ class AuthenticationActivity : AppCompatActivity() {
         binding = ActivityAuthenticationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         userPreferences = UserPreferences(this)
-        CoroutineScope(Dispatchers.IO).launch {
-            auth = Firebase.auth
-            deviceId = getDeviceId()
+        auth = Firebase.auth
+        deviceId = getDeviceId()
+
+        lifecycleScope.launch(Dispatchers.IO) {
             checkDeviceBlocked()
         }
+
         binding.btnLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
 
         binding.btnGoogle.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.web_client_id))
-                    .requestEmail()
-                    .build()
-                val googleClient = GoogleSignIn.getClient(this@AuthenticationActivity, googleConf)
-                googleClient.signOut()
+            val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.web_client_id))
+                .requestEmail()
+                .build()
+            val googleClient = GoogleSignIn.getClient(this@AuthenticationActivity, googleConf)
+            googleClient.signOut()
+
+            lifecycleScope.launch(Dispatchers.Main) {
                 googleSignInLauncher.launch(googleClient.signInIntent)
-                runOnUiThread {
-                    binding.loading.isVisible = true
-                }
+                binding.loading.isVisible = true
             }
         }
     }
 
     private var googleSignInLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                try {
-                    account = task.getResult(ApiException::class.java)
-                    val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                    auth.signInWithCredential(credential).addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch {
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    try {
+                        account = task.getResult(ApiException::class.java)
+                        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                        auth.signInWithCredential(credential).addOnCompleteListener {
+                            if (it.isSuccessful) {
                                 val userId = account.id
                                 val userRef = db.collection("users").document(userId.toString())
 
                                 userRef.get()
                                     .addOnSuccessListener { document ->
                                         if (document.exists()) {
-                                            CoroutineScope(Dispatchers.IO).launch {
-                                                document.toObject(User::class.java)
-                                                    ?.let { it1 ->
-                                                        userPreferences.saveUser(it1)
-                                                    }
-                                                Log.d(
-                                                    TAG,
-                                                    "El usuario ya existe, no es necesario crearlo en Firestore"
-                                                )
-                                                runOnUiThread {
+                                            lifecycleScope.launch {
+                                                document.toObject(User::class.java)?.let { user ->
+                                                    userPreferences.saveUser(user)
+                                                }
+                                                withContext(Dispatchers.Main) {
                                                     binding.loading.isVisible = false
                                                 }
                                                 startActivity(
@@ -128,10 +126,9 @@ class AuthenticationActivity : AppCompatActivity() {
                                             )
                                             userRef.set(user)
                                                 .addOnSuccessListener { _ ->
-                                                    CoroutineScope(Dispatchers.IO).launch {
+                                                    lifecycleScope.launch {
                                                         userPreferences.saveUser(user)
-                                                        Log.d(TAG, "Usuario agregado exitosamente")
-                                                        runOnUiThread {
+                                                        withContext(Dispatchers.Main) {
                                                             binding.loading.isVisible = false
                                                         }
                                                         startActivity(
@@ -144,31 +141,38 @@ class AuthenticationActivity : AppCompatActivity() {
                                                     }
                                                 }
                                                 .addOnFailureListener { e ->
-                                                    Log.w(TAG, "Error al agregar usuario", e)
+                                                    Toast.makeText(
+                                                        this@AuthenticationActivity,
+                                                        "Error al iniciar sesión ${e.message.toString()}",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
                                                 }
                                         }
                                     }
+                            } else {
+                                lifecycleScope.launch {
+                                    withContext(Dispatchers.Main) {
+                                        binding.loading.isVisible = false
+                                    }
+                                    Toast.makeText(
+                                        this@AuthenticationActivity,
+                                        "Error al iniciar sesión ${it.exception?.message.toString()}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
-                        } else {
-                            runOnUiThread {
-                                binding.loading.isVisible = false
-                            }
-                            Toast.makeText(
-                                this@AuthenticationActivity,
-                                "Error al iniciar sesión.",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
+                    } catch (e: Exception) {
+                        //
                     }
-                } catch (e: Exception) {
-                    //
-                }
-            } else {
-                runOnUiThread {
-                    binding.loading.isVisible = false
+                } else {
+                    withContext(Dispatchers.Main) {
+                        binding.loading.isVisible = false
+                    }
                 }
             }
         }
+
 
     @SuppressLint("HardwareIds")
     private fun getDeviceId(): String {
@@ -176,14 +180,14 @@ class AuthenticationActivity : AppCompatActivity() {
         return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    private suspend fun checkDeviceBlocked(){
+    private suspend fun checkDeviceBlocked() {
         db.collection("blockedDevices").whereEqualTo("deviceId", getDeviceId()).get()
             .addOnSuccessListener { querySnapshot ->
                 if (!querySnapshot.isEmpty) {
                     runOnUiThread {
                         try {
                             showBlockedDeviceInfo()
-                        } catch (e:Exception){
+                        } catch (e: Exception) {
                             //
                         }
                     }
@@ -192,20 +196,23 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     private fun showBlockedDeviceInfo() {
-        Blurry.with(this)
-            .radius(10)
-            .sampling(8)
-            .async()
-            .onto(binding.root)
-        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
-            .setTitle(getString(R.string.blocked_device_title))
-            .setMessage(getString(R.string.blocked_device_info))
-            .setPositiveButton(getString(R.string.understand)) { _, _ ->
-                finishAffinity()
-            }
-            .setCancelable(false)
-            .create()
-
-        dialog.show()
+        try {
+            Blurry.with(this)
+                .radius(10)
+                .sampling(8)
+                .async()
+                .onto(binding.root)
+            val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
+                .setTitle(getString(R.string.blocked_device_title))
+                .setMessage(getString(R.string.blocked_device_info))
+                .setPositiveButton(getString(R.string.understand)) { _, _ ->
+                    finishAffinity()
+                }
+                .setCancelable(false)
+                .create()
+            dialog.show()
+        } catch (e:Exception){
+            finishAffinity()
+        }
     }
 }

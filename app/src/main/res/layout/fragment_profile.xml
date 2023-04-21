@@ -126,32 +126,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_horizontal|center_vertical"
-                        app:srcCompat="@drawable/ic_notifications" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchVibrate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checked="true"
-                        android:fontFamily="@font/poppins_medium"
-                        android:text="@string/notifications_title"
-                        android:textColor="@color/palette_white_down"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:thumbTint="@color/palette_red" />
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/btnRequest"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

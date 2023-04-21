@@ -211,26 +211,30 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
     }
 
     private fun showAccountDisabledDialog() {
-        Blurry.with(this)
-            .radius(10)
-            .sampling(8)
-            .async()
-            .onto(binding.root)
-        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
-            .setTitle(getString(R.string.disabled_account_title))
-            .setMessage(getString(R.string.disabled_account_message))
-            .setPositiveButton(getString(R.string.understand)) { _, _ ->
-                Firebase.auth.signOut()
-                CoroutineScope(Dispatchers.IO).launch {
-                    userPreferences.clearDataStore()
-                    startActivity(Intent(this@MainActivity, AuthenticationActivity::class.java))
-                    finish()
+        try {
+            Blurry.with(this)
+                .radius(10)
+                .sampling(8)
+                .async()
+                .onto(binding.root)
+            val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
+                .setTitle(getString(R.string.disabled_account_title))
+                .setMessage(getString(R.string.disabled_account_message))
+                .setPositiveButton(getString(R.string.understand)) { _, _ ->
+                    Firebase.auth.signOut()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        userPreferences.clearDataStore()
+                        startActivity(Intent(this@MainActivity, AuthenticationActivity::class.java))
+                        finish()
+                    }
                 }
-            }
-            .setCancelable(false)
-            .create()
+                .setCancelable(false)
+                .create()
 
-        dialog.show()
+            dialog.show()
+        } catch (e:Exception){
+            //
+        }
     }
 
     private fun forceUpdate() {

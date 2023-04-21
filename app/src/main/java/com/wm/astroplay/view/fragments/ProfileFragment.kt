@@ -14,7 +14,9 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -25,6 +27,7 @@ import com.google.firebase.ktx.Firebase
 import com.wm.astroplay.BuildConfig
 import com.wm.astroplay.R
 import com.wm.astroplay.databinding.FragmentProfileBinding
+import com.wm.astroplay.model.User
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.view.AuthenticationActivity
 import com.wm.astroplay.view.EditProfileActivity
@@ -52,81 +55,127 @@ class ProfileFragment : Fragment() {
     ): View {
         binding = FragmentProfileBinding.inflate(layoutInflater)
         userPreferences = UserPreferences(this.requireContext())
-        lifecycleScope.launch(Dispatchers.IO) {
-            userPreferences.getUser().collect { user ->
-                withContext(Dispatchers.Main){
-                    Glide.with(this@ProfileFragment).load(user?.photo).circleCrop().transition(
-                        DrawableTransitionOptions.withCrossFade())
-                        .error(R.drawable.default_user).into(binding.profileImage)
-                    binding.userName.text = user?.name ?: "Usuario"
-                    binding.userEmail.text = user?.email ?: "email@gmail.com"
-                    when(user?.role){
-                        1 -> {
-                            binding.btnAdmin.isVisible = false
-                            binding.userRole.setBackgroundResource(R.drawable.role_badge)
-                            binding.userRole.text = getString(R.string.role_user_1)
-                        }
-                        2 -> {
-                            binding.btnAdmin.isVisible = false
-                            binding.userRole.setBackgroundResource(R.drawable.role_badge_2)
-                            binding.userRole.text = getString(R.string.role_user_2)
-                        }
-                        3 -> {
-                            binding.userRole.setBackgroundResource(R.drawable.role_badge_3)
-                            binding.userRole.text = getString(R.string.role_user_3)
-                            binding.btnAdmin.isVisible = true
-                            binding.btnAdmin.setOnClickListener {
-                                showRoleChangeDialog()
-                            }
-                        }
-                        else -> {
-                            binding.btnAdmin.isVisible = false
-                            binding.userRole.setBackgroundResource(R.drawable.role_badge)
-                            binding.userRole.text = getString(R.string.role_user_1)
-                        }
-                    }
+
+        setupProfileData()
+        setupEditProfileButton()
+        setupLogoutButton()
+        setupTermsButton()
+        setupRequestButton()
+        setupVersionInfo()
+
+        return binding.root
+    }
+
+    private fun setupProfileData() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userPreferences.getUser().collect { user ->
+                    updateProfileUI(user)
                 }
             }
         }
+    }
 
+    private fun updateProfileUI(user: User?) {
+        Glide.with(this@ProfileFragment).load(user?.photo).circleCrop().transition(
+            DrawableTransitionOptions.withCrossFade())
+            .error(R.drawable.default_user).into(binding.profileImage)
+        binding.userName.text = user?.name ?: "Usuario"
+        binding.userEmail.text = user?.email ?: "email@gmail.com"
+        setupUserRole(user)
+    }
+
+    private fun setupUserRole(user: User?) {
+        when (user?.role) {
+            1 -> {
+                binding.btnAdmin.isVisible = false
+                binding.userRole.setBackgroundResource(R.drawable.role_badge)
+                binding.userRole.text = getString(R.string.role_user_1)
+            }
+            2 -> {
+                binding.btnAdmin.isVisible = false
+                binding.userRole.setBackgroundResource(R.drawable.role_badge_2)
+                binding.userRole.text = getString(R.string.role_user_2)
+            }
+            3 -> {
+                binding.userRole.setBackgroundResource(R.drawable.role_badge_3)
+                binding.userRole.text = getString(R.string.role_user_3)
+                setupAdminButton()
+            }
+            else -> {
+                binding.btnAdmin.isVisible = false
+                binding.userRole.setBackgroundResource(R.drawable.role_badge)
+                binding.userRole.text = getString(R.string.role_user_1)
+            }
+        }
+    }
+
+    private fun setupAdminButton() {
+        binding.btnAdmin.isVisible = true
+        binding.btnAdmin.setOnClickListener {
+            showRoleChangeDialog()
+        }
+    }
+
+    private fun setupEditProfileButton() {
         binding.btnEditProfile.setOnClickListener {
             startActivity(Intent(this.requireContext(), EditProfileActivity::class.java))
         }
+    }
 
+    private fun setupLogoutButton() {
         binding.btnLogout.setOnClickListener {
-            MaterialAlertDialogBuilder(this.requireContext(),R.style.MaterialAlertDialog_rounded)
-                .setTitle(getString(R.string.logout_title))
-                .setMessage(getString(R.string.logout_message))
-                .setNegativeButton(getString(R.string.cancel)) { dialog, which ->
-                    dialog.dismiss()
-                }
-                .setPositiveButton(getString(R.string.logout)) { dialog, which ->
-                    Firebase.auth.signOut()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        userPreferences.clearDataStore()
-                        startActivity(Intent(this@ProfileFragment.requireContext(), AuthenticationActivity::class.java))
+            showLogoutDialog()
+        }
+    }
+
+    private fun showLogoutDialog() {
+        MaterialAlertDialogBuilder(this.requireContext(), R.style.MaterialAlertDialog_rounded)
+            .setTitle(getString(R.string.logout_title))
+            .setMessage(getString(R.string.logout_message))
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(getString(R.string.logout)) { _, _ ->
+                Firebase.auth.signOut()
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    userPreferences.clearDataStore()
+                    withContext(Dispatchers.Main) {
+                        startActivity(
+                            Intent(
+                                this@ProfileFragment.requireContext(),
+                                AuthenticationActivity::class.java
+                            )
+                        )
                         requireActivity().finish()
                     }
                 }
-                .show()
-        }
+            }
+            .show()
+    }
 
+
+    private fun setupTermsButton() {
         binding.btnTerms.setOnClickListener {
-            startActivity(Intent(this.requireContext(),TermsActivity::class.java))
+            startActivity(Intent(this.requireContext(), TermsActivity::class.java))
         }
+    }
 
+    private fun setupRequestButton() {
         binding.btnRequest.setOnClickListener {
-            startActivity(Intent(this.requireContext(),RequestActivity::class.java))
+            startActivity(Intent(this.requireContext(), RequestActivity::class.java))
         }
+    }
 
+    private fun setupVersionInfo() {
         binding.versionInfo.setOnLongClickListener {
             Toast.makeText(this.requireContext(), "\uD83D\uDC9B\uD83D\uDC99❤️", Toast.LENGTH_LONG).show()
             return@setOnLongClickListener true
         }
 
         binding.versionInfo.text = getString(R.string.version_info, BuildConfig.VERSION_NAME)
-        return binding.root
     }
+
 
     private fun showRoleChangeDialog() {
         val view = LayoutInflater.from(this.requireContext()).inflate(R.layout.role_change_dialog, null)

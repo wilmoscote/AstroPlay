@@ -11,7 +11,8 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher2"
+        android:roundIcon="@mipmap/ic_launcher2_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AstroPlay"
@@ -63,11 +64,7 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/default_user" />
-        <!--
- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more.
-        -->
+            android:resource="@drawable/ic_notify" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/palette_red" />

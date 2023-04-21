@@ -16,23 +16,30 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.wm.astroplay.R
 import com.wm.astroplay.databinding.FragmentHomeBinding
+import com.wm.astroplay.model.Movie
 import com.wm.astroplay.model.MovieProvider
+import com.wm.astroplay.model.User
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.model.interfaces.FragmentNavigationListener
 import com.wm.astroplay.view.adapters.MovieAdapter
 import com.wm.astroplay.viewmodel.MoviesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
@@ -69,29 +76,45 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(layoutInflater)
         userPreferences = UserPreferences(this.requireContext())
-        lifecycleScope.launch(Dispatchers.IO) {
-            userPreferences.getUser().collect { user ->
-                withContext(Dispatchers.Main){
-                    try {
-                        Glide.with(this@HomeFragment).load(user?.photo).circleCrop()
-                            .error(R.drawable.default_user).into(binding.profileImg)
-                        binding.welcomeText.text = getString(
-                            R.string.home_welcome_text,
-                            user?.name?.split(" ")?.get(0) ?: "Usuario"
-                        )
-                        val quotes = MovieProvider.getQuotes()
-                        val randomIndex = Random.nextInt(quotes.size)
-                        binding.randomText.text = quotes[randomIndex]
 
-                    } catch (e:Exception){
-                        //
-                    }
+        viewLifecycleOwner.lifecycleScope.launch {
+            //viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val user = userPreferences.getUser().firstOrNull()
+                withContext(Dispatchers.Main) {
+                    setupViews(user)
                 }
                 viewModel.getUserNotifications(user?.id ?: "")
-            }
+                viewModel.init()
+           // }
         }
 
-        viewModel.init()
+        return binding.root
+    }
+
+    private fun setupViews(user: User?) {
+        Glide.with(this@HomeFragment)
+            .load(user?.photo)
+            .circleCrop()
+            .error(R.drawable.default_user)
+            .into(binding.profileImg)
+
+        binding.welcomeText.text = getString(
+            R.string.home_welcome_text,
+            user?.name?.split(" ")?.get(0) ?: "Usuario"
+        )
+
+        val quotes = MovieProvider.getQuotes()
+        val randomIndex = Random.nextInt(quotes.size)
+        binding.randomText.text = quotes[randomIndex]
+
+        setupClickListeners()
+
+        setupSwipeRefresh()
+
+        observeViewModel()
+    }
+
+    private fun setupClickListeners() {
         binding.btnNotification.setOnClickListener {
             navigationListener?.onNavigateTo("notifications")
         }
@@ -99,101 +122,63 @@ class HomeFragment : Fragment() {
         binding.profileImg.setOnClickListener {
             navigationListener?.onNavigateTo("profile")
         }
+    }
 
-        binding.textSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                binding.homeFeedLayout.isVisible = p0.isNullOrBlank()
-                binding.searchMovieLayout.isVisible = !p0.isNullOrBlank()
-            }
-
-            override fun afterTextChanged(p0: Editable?) { }
-        })
-
-            binding.textSearch.setOnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    val searchTerm = binding.textSearch.text.toString()
-
-                    // Realiza la búsqueda utilizando corutinas
-                    CoroutineScope(Dispatchers.IO).launch {
-                        viewModel.searchMovies(searchTerm)
-                    }
-
-                    // Oculta el teclado después de realizar la búsqueda
-                    val imm = this.requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(binding.textSearch.windowToken, 0)
-
-                    // Devuelve 'true' para indicar que se ha manejado la acción
-                    return@setOnEditorActionListener true
-                }
-
-                // Devuelve 'false' para que el sistema maneje la acción predeterminada
-                false
-            }
-
+    private fun setupSwipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener {
+            launchDataLoad()
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.apply {
+            popularMovieList.observe(viewLifecycleOwner) { movies ->
+                setupRecyclerView(binding.popularMoviesView, binding.popularMoviesViewLoading, movies)
+            }
+
+            ratedMovieList.observe(viewLifecycleOwner) { movies ->
+                setupRecyclerView(binding.ratedMoviesView, binding.ratedMoviesViewLoading, movies)
+            }
+
+            recentMovieList.observe(viewLifecycleOwner) { movies ->
+                setupRecyclerView(binding.recentMoviesView, binding.recentMoviesViewLoading, movies)
+            }
+
+            randomMovieList.observe(viewLifecycleOwner) { movies ->
+                setupRecyclerView(binding.randomMoviesView, binding.randomMoviesViewLoading, movies)
+            }
+
+            userNotifications.observe(viewLifecycleOwner) { notifications ->
+                binding.notifyIcon.isVisible = notifications.isNotEmpty()
+            }
+        }
+    }
+
+    private fun setupRecyclerView(
+        recyclerView: RecyclerView, loadingView: ShimmerFrameLayout, movies: List<Movie>
+    ) {
+        val movieAdapter = MovieAdapter(movies)
+        recyclerView.apply {
+            adapter = movieAdapter
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            isVisible = true
+        }
+        loadingView.isVisible = false
+    }
+
+    private fun launchDataLoad() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            binding.swipeRefresh.isRefreshing = true
             try {
-                CoroutineScope(Dispatchers.IO).launch {
-                    viewModel.fetchPopularMovies()
-                    viewModel.fetchRecentsMovies()
-                    viewModel.fetchRandomMovies()
-                    viewModel.fetchRatedMovies()
-                }
+                viewModel.fetchPopularMovies()
+                viewModel.fetchRecentsMovies()
+                viewModel.fetchRandomMovies()
+                viewModel.fetchRatedMovies()
             } catch (e: Exception) {
                 //Log.e("SaludDebug", e.message.toString())
             }
             binding.swipeRefresh.isRefreshing = false
         }
-
-        viewModel.searching.observe(viewLifecycleOwner){
-            binding.searching.isVisible = it
-        }
-
-        viewModel.searchResult.observe(viewLifecycleOwner){ movies ->
-            val movieResultAdapter = MovieAdapter(movies) // Reemplaza 'listOf()' con tus datos de películas
-            binding.moviesResultView.adapter = movieResultAdapter
-            binding.moviesResultView.layoutManager = GridLayoutManager(this.requireContext(), 2) // El segundo parámetro es el número de columnas
-        }
-        viewModel.popularMovieList.observe(viewLifecycleOwner) { movies ->
-            val movieAdapter = MovieAdapter(movies)
-            binding.popularMoviesView.adapter = movieAdapter
-            binding.popularMoviesView.layoutManager =
-                LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            binding.popularMoviesView.isVisible = true
-            binding.popularMoviesViewLoading.isVisible = false
-        }
-
-        viewModel.ratedMovieList.observe(viewLifecycleOwner) { movies ->
-            val movieAdapter = MovieAdapter(movies)
-            binding.ratedMoviesView.adapter = movieAdapter
-            binding.ratedMoviesView.layoutManager =
-                LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            binding.ratedMoviesView.isVisible = true
-            binding.ratedMoviesViewLoading.isVisible = false
-        }
-
-        viewModel.recentMovieList.observe(viewLifecycleOwner) { movies ->
-            val movieAdapter = MovieAdapter(movies)
-            binding.recentMoviesView.adapter = movieAdapter
-            binding.recentMoviesView.layoutManager =
-                LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            binding.recentMoviesView.isVisible = true
-            binding.recentMoviesViewLoading.isVisible = false
-        }
-
-        viewModel.randomMovieList.observe(viewLifecycleOwner){ movies ->
-            val randomMovieAdapter = MovieAdapter(movies)
-            binding.randomMoviesView.adapter = randomMovieAdapter
-            binding.randomMoviesView.layoutManager =
-                LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            binding.randomMoviesView.isVisible = true
-            binding.randomMoviesViewLoading.isVisible = false
-        }
-
-        viewModel.userNotifications.observe(viewLifecycleOwner){ notifications ->
-            binding.notifyIcon.isVisible = notifications.isNotEmpty()
-        }
-        return binding.root
     }
+
 }

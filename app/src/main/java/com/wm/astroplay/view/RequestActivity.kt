@@ -23,6 +23,7 @@ import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RequestActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRequestBinding
@@ -36,51 +37,47 @@ class RequestActivity : AppCompatActivity() {
         setContentView(binding.root)
         userPreferences = UserPreferences(this.applicationContext)
 
-        CoroutineScope(Dispatchers.IO).launch {
-
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            lifecycleScope.launch(Dispatchers.IO) {
-                userPreferences.getUser().collect { user ->
-                    currentUser = user
-                    if((user?.role ?: 0) < 2){
-                        isRequestAllowed()
-                    }
+        lifecycleScope.launch(Dispatchers.IO) {
+            userPreferences.getUser().collect { user ->
+                currentUser = user
+                if ((user?.role ?: 0) < 2) {
+                    isRequestAllowed()
                 }
             }
         }
 
-        viewModel.loading.observe(this){ loading ->
+        viewModel.loading.observe(this) { loading ->
             binding.loading.isVisible = loading
         }
 
-        viewModel.requestSent.observe(this){ requestSuccess ->
-            if(requestSuccess){
-                lifecycleScope.launch {
+        viewModel.requestSent.observe(this) { requestSuccess ->
+            if (requestSuccess) {
+                lifecycleScope.launch(Dispatchers.IO) {
                     userPreferences.saveLastRequestTime(System.currentTimeMillis())
-                    runOnUiThread {
-                        Toast.makeText(this@RequestActivity, "Solicitud enviada con éxito.", Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@RequestActivity, getString(R.string.request_sent), Toast.LENGTH_SHORT).show()
                         onBackPressedDispatcher.onBackPressed()
                     }
                 }
 
             } else {
-                Toast.makeText(this, "Error al enviar solicitud, intentelo nuevamente.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.request_error_sent), Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.btnSubmit.setOnClickListener {
             if (binding.etTitle.text.toString().isEmpty()) {
-                Toast.makeText(this, "El título es obligatorio", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.title_required_error), Toast.LENGTH_SHORT).show()
             } else {
-                if (currentUser != null){
-                    CoroutineScope(Dispatchers.IO).launch {
-                        viewModel.sendRequest(binding.etTitle.text.toString(),binding.etDescription.text.toString(),currentUser!!)
+                if (currentUser != null) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        viewModel.sendRequest(binding.etTitle.text.toString(), binding.etDescription.text.toString(), currentUser!!)
                     }
                 }
             }
         }
     }
+
 
     private suspend fun isRequestAllowed() {
         userPreferences.getLastRequestTime().collect { lastRequestTime ->
@@ -97,20 +94,24 @@ class RequestActivity : AppCompatActivity() {
     }
 
     private fun showCannotResquestDialog() {
-        Blurry.with(this)
-            .radius(10)
-            .sampling(8)
-            .async()
-            .onto(binding.root)
-        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
-            .setTitle(getString(R.string.info))
-            .setMessage(getString(R.string.cannot_request_mesage))
-            .setPositiveButton(getString(R.string.understand)) { _, _ ->
-                onBackPressedDispatcher.onBackPressed()
-            }
-            .setCancelable(false)
-            .create()
+        try {
+            Blurry.with(this)
+                .radius(10)
+                .sampling(8)
+                .async()
+                .onto(binding.root)
+            val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_rounded)
+                .setTitle(getString(R.string.info))
+                .setMessage(getString(R.string.cannot_request_mesage))
+                .setPositiveButton(getString(R.string.understand)) { _, _ ->
+                    onBackPressedDispatcher.onBackPressed()
+                }
+                .setCancelable(false)
+                .create()
 
-        dialog.show()
+            dialog.show()
+        } catch (e:Exception){
+            //
+        }
     }
 }
