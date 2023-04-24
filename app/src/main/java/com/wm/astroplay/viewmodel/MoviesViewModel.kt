@@ -18,9 +18,14 @@ import com.wm.astroplay.model.*
 import com.wm.astroplay.view.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import kotlin.random.Random
 
 class MoviesViewModel : ViewModel() {
@@ -33,6 +38,7 @@ class MoviesViewModel : ViewModel() {
     var randomMovieList = MutableLiveData<List<Movie>>()
     var ratedMovieList = MutableLiveData<List<Movie>>()
     var searchResult = MutableLiveData<List<Movie>>()
+    var premiereMovieList = MutableLiveData<List<Movie>>()
     var searchGenreResult = MutableLiveData<List<Movie>>()
     var searching = MutableLiveData<Boolean>()
     var searchingGenre = MutableLiveData<Boolean>()
@@ -43,6 +49,7 @@ class MoviesViewModel : ViewModel() {
 
     fun init(){
         viewModelScope.launch {
+            fetchPremiereMovies()
             fetchPopularMovies()
             fetchRecentsMovies()
             fetchRandomMovies()
@@ -68,20 +75,24 @@ class MoviesViewModel : ViewModel() {
 
     suspend fun fetchPopularMovies() {
         return withContext(Dispatchers.IO) {
-            db.collection("movies")
-                .orderBy("views", Query.Direction.DESCENDING)
-                .limit(10)
-                .get()
-                .addOnSuccessListener { querySnapshot ->
-                    val movies = querySnapshot.documents.mapNotNull { document ->
-                        document.toObject(Movie::class.java)
+            try {
+                db.collection("movies")
+                    .orderBy("views", Query.Direction.DESCENDING)
+                    .limit(10)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val movies = querySnapshot.documents.mapNotNull { document ->
+                            document.toObject(Movie::class.java)
+                        }
+                        //Log.d(TAG, "Movies fetched. ${querySnapshot.documents.toString()}")
+                        popularMovieList.postValue(movies)
                     }
-                    //Log.d(TAG, "Movies fetched. ${querySnapshot.documents.toString()}")
-                    popularMovieList.postValue(movies)
-                }
-                .addOnFailureListener { exception ->
-                    //Log.w(TAG, "Error al obtener las películas.", exception)
-                }
+                    .addOnFailureListener { exception ->
+                        //Log.w(TAG, "Error al obtener las películas.", exception)
+                    }
+            } catch (e:Exception){
+                //Log.e("AstroDebug",e.message.toString())
+            }
         }
     }
 
@@ -136,6 +147,21 @@ class MoviesViewModel : ViewModel() {
         }
     }
 
+    suspend fun fetchPremiereMovies() {
+        try {
+            val querySnapshot = db.collection("movies")
+                .whereEqualTo("isPremiere", true)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(5)
+                .get()
+                .await()
+
+            premiereMovieList.postValue(querySnapshot.toObjects(Movie::class.java))
+        } catch (e: Exception) {
+           // Log.e("AstroDebug", "Error fetching premiere movies: ", e)
+            premiereMovieList.postValue(emptyList())
+        }
+    }
 
     suspend fun searchMovies(searchTerm: String) {
         searching.postValue(true)
@@ -238,7 +264,7 @@ class MoviesViewModel : ViewModel() {
                             val targetUsers = doc["targetUsers"] as? List<*>
                             targetUsers == null || userId in targetUsers
                         }.mapNotNull { doc -> doc.toObject(Notification::class.java) }
-                    Log.d(TAG,"Hay notificaciones para ti: ${notifications.toString()}")
+                 //   Log.d(TAG,"Hay notificaciones para ti: ${notifications.toString()}")
                     userNotifications.postValue(notifications)
                 }
         }
@@ -254,9 +280,9 @@ class MoviesViewModel : ViewModel() {
                 transaction.update(notificationRef, "targetUsers", targetUsers)
             }.addOnSuccessListener {
                 // El ID del usuario se ha eliminado correctamente de la lista targetUsers
-                Log.d("AstroDebug","User removed from notification")
+                //Log.d("AstroDebug","User removed from notification")
             }.addOnFailureListener { exception ->
-                Log.d("AstroDebug","User NOT removed from notification")
+               // Log.d("AstroDebug","User NOT removed from notification")
                 // Error al eliminar el ID del usuario de la lista targetUsers
             }
         }
@@ -265,15 +291,15 @@ class MoviesViewModel : ViewModel() {
     suspend fun sendRequest(title: String, description: String?, currentUser: User) {
         withContext(Dispatchers.IO){
             loading.postValue(true)
+            val requestId = UUID.randomUUID().toString()
             val request = Request(
-                userId = currentUser.id.toString(),
-                userName = currentUser.name.toString(),
-                userEmail = currentUser.email.toString(),
+                id = requestId,
+                user = currentUser,
                 title = title,
                 description = if (description?.isNotEmpty() == true) description else null
             )
 
-            db.collection("requests").add(request)
+            db.collection("requests").document(requestId).set(request)
                 .addOnSuccessListener {
                     loading.postValue(false)
                     requestSent.postValue(true)
@@ -318,6 +344,29 @@ class MoviesViewModel : ViewModel() {
 
         // Actualiza el rating promedio y el número de votos en la película
         moviesCollection.document(movieId).update("appRating", averageRating, "numVotes", count)
+    }
+
+    fun getMovieFromFirestore(movieId: String): Flow<Movie> {
+      //  Log.d("AstroDebug","Looking movie: ${movieId.toString()}")
+        return flow {
+            val movieRef = db.collection("movies").document(movieId)
+            val documentSnapshot = movieRef.get().await()
+
+            if (documentSnapshot.exists()) {
+                val movie = documentSnapshot.toObject(Movie::class.java)
+                if (movie != null) {
+                    emit(movie)
+                } else {
+                    throw Exception("Movie data is null")
+                }
+            } else {
+                throw Exception("Movie not found")
+            }
+        }.onStart {
+            // Emit loading state if necessary
+        }.onCompletion {
+            //
+        }
     }
 
 }

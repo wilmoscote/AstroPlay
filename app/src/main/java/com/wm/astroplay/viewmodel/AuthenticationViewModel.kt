@@ -1,7 +1,6 @@
 package com.wm.astroplay.viewmodel
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +8,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.wm.astroplay.model.User
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -41,6 +39,8 @@ class AuthenticationViewModel : ViewModel() {
                                 photo = downloadUri.toString(),
                                 favorites = user.favorites,
                                 role = user.role,
+                                deviceId = user.deviceId,
+                                fcmToken = user.fcmToken,
                                 disabled = user.disabled,
                                 createdAt = user.createdAt
                             )

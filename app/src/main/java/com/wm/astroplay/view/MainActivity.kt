@@ -21,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -28,10 +29,15 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ConfigUpdate
+import com.google.firebase.remoteconfig.ConfigUpdateListener
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.wm.astroplay.BuildConfig
@@ -48,7 +54,9 @@ import com.wm.astroplay.viewmodel.MoviesViewModel
 import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
@@ -64,9 +72,11 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
     private lateinit var userPreferences: UserPreferences
     var doubleBackToExitPressedOnce = false
     private lateinit var firebaseAnalytics: FirebaseAnalytics
+
     companion object {
         val TAG = "AstroDebug"
     }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -76,6 +86,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
             //
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -92,7 +103,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
             userPreferences.getUser().collect { user ->
                 try {
                     listenToUserChanges(user?.id ?: "")
-                } catch (e:Exception){
+                } catch (e: Exception) {
                     //
                 }
             }
@@ -102,7 +113,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
             .replace(R.id.nav_host_fragment, homeFragment).commit()
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when(item.itemId){
+            when (item.itemId) {
                 R.id.homePage -> {
                     if (item.itemId != binding.bottomNavigation.selectedItemId) {
                         supportFragmentManager.beginTransaction()
@@ -117,7 +128,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                         val parameters = Bundle().apply {
                             this.putString("action", "screen")
                         }
-                        firebaseAnalytics.logEvent("menu_favorites",parameters)
+                        firebaseAnalytics.logEvent("menu_favorites", parameters)
                     }
                 }
                 R.id.explorePage -> {
@@ -127,7 +138,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                         val parameters = Bundle().apply {
                             this.putString("action", "screen")
                         }
-                        firebaseAnalytics.logEvent("menu_explore",parameters)
+                        firebaseAnalytics.logEvent("menu_explore", parameters)
                     }
                 }
                 R.id.profilePage -> {
@@ -137,7 +148,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                         val parameters = Bundle().apply {
                             this.putString("action", "screen")
                         }
-                        firebaseAnalytics.logEvent("menu_profile",parameters)
+                        firebaseAnalytics.logEvent("menu_profile", parameters)
                     }
                 }
             }
@@ -161,24 +172,61 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                 }, 5000)
             }
         })
-
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             remoteConfig.fetchAndActivate()
                 .addOnCompleteListener(this@MainActivity) { task ->
                     if (task.isSuccessful) {
                         val appVersion = Firebase.remoteConfig.getDouble("version")
                         val appDisabled = Firebase.remoteConfig.getBoolean("app_disabled")
-                        Log.d(TAG, appVersion.toString())
+                      //  Log.d("AstroDebug", "Version Server: $appVersion")
+                       // Log.d("AstroDebug", "Is Disabled?: ${appDisabled.toString()}")
+                       // Log.d(TAG, appVersion.toString())
                         if (appVersion.toInt() > BuildConfig.VERSION_CODE) {
                             forceUpdate()
                         }
-                        Log.d(TAG, appDisabled.toString())
-                        if(appDisabled){
+                      //  Log.d(TAG, appDisabled.toString())
+                        if (appDisabled) {
                             showAppDisableDialog()
                         }
                     }
+
                 }
+            remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
+                override fun onUpdate(configUpdate: ConfigUpdate) {
+                    //Log.d(TAG, "Updated keys: " + configUpdate.updatedKeys);
+
+                    if (configUpdate.updatedKeys.contains("app_disabled")) {
+                        remoteConfig.activate().addOnCompleteListener {
+                            val appDisabled = Firebase.remoteConfig.getBoolean("app_disabled")
+                            if (appDisabled) {
+                                showAppDisableDialog()
+                            }
+                        }
+                    }
+
+                    if (configUpdate.updatedKeys.contains("version")) {
+                        remoteConfig.activate().addOnCompleteListener {
+                            val appVersion = Firebase.remoteConfig.getDouble("version")
+                            if (appVersion.toInt() > BuildConfig.VERSION_CODE) {
+                                forceUpdate()
+                            }
+                        }
+                    }
+                }
+
+                override fun onError(error: FirebaseRemoteConfigException) {
+                    //Log.w(TAG, "Config update error with code: " + error.code, error)
+                }
+            })
             checkDeviceBlocked()
+        }
+
+        try {
+            lifecycleScope.launch {
+                handleDeepLink(intent)
+            }
+        } catch (e: Exception) {
+            //
         }
     }
 
@@ -194,14 +242,14 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
             if (snapshot != null && snapshot.exists()) {
                 val user = snapshot.toObject(User::class.java)
                 if (user != null) {
-                    Log.w(TAG, "Aplicando cambios ", error)
-                    CoroutineScope(Dispatchers.IO).launch{
+                   // Log.w(TAG, "Aplicando cambios ", error)
+                    CoroutineScope(Dispatchers.IO).launch {
                         userPreferences.saveUser(user)
                     }
-                    if (user.disabled == true){
+                    if (user.disabled == true) {
                         try {
                             showAccountDisabledDialog()
-                        } catch (e:Exception){
+                        } catch (e: Exception) {
                             finish()
                         }
                     }
@@ -232,7 +280,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
                 .create()
 
             dialog.show()
-        } catch (e:Exception){
+        } catch (e: Exception) {
             //
         }
     }
@@ -300,7 +348,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
     }
 
     override fun onNavigateTo(fragment: String) {
-        when(fragment){
+        when (fragment) {
             "notifications" -> {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.nav_host_fragment, notificationsFragment).commit()
@@ -323,7 +371,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
         return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    private suspend fun checkDeviceBlocked(){
+    private suspend fun checkDeviceBlocked() {
         db.collection("blockedDevices").whereEqualTo("deviceId", getDeviceId()).get()
             .addOnSuccessListener { querySnapshot ->
                 if (!querySnapshot.isEmpty) {
@@ -354,5 +402,27 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
             .create()
 
         dialog.show()
+    }
+
+    private suspend fun handleDeepLink(intent: Intent?) {
+        //Log.d("AstroDebug", "Looking Movie!")
+        val deepLink: Uri? = intent?.data
+        val movieId = deepLink?.getQueryParameter("id")
+        //Log.d("AstroDebug", "Movie id: $movieId")
+
+        if (movieId != null) {
+            viewModel.getMovieFromFirestore(movieId).catch { e ->
+                // Handle error
+            }.collect { movie ->
+                openMovieDetailActivity(movie)
+            }
+        }
+    }
+
+    private fun openMovieDetailActivity(movie: Movie) {
+        val intent = Intent(this, MovieDetailActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("movie", movie)
+        startActivity(intent)
     }
 }

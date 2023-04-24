@@ -84,7 +84,7 @@ class RequestActivity : AppCompatActivity() {
             val currentTime = System.currentTimeMillis()
             val oneDayInMillis = 24 * 60 * 60 * 1000
             val isAllowToRequest = currentTime - (lastRequestTime ?: 0L) >= oneDayInMillis
-            Log.d("AstroDebug","IsAllowed: $isAllowToRequest")
+            //Log.d("AstroDebug","IsAllowed: $isAllowToRequest")
             runOnUiThread {
                 if(!isAllowToRequest){
                     showCannotResquestDialog()

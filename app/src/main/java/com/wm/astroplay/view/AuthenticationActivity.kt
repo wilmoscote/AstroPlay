@@ -6,9 +6,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
@@ -22,7 +20,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.wm.astroplay.R
 import com.wm.astroplay.databinding.ActivityAuthenticationBinding
@@ -30,14 +27,9 @@ import com.wm.astroplay.model.User
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.viewmodel.AuthenticationViewModel
 import jp.wasabeef.blurry.Blurry
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class AuthenticationActivity : AppCompatActivity() {
@@ -121,6 +113,7 @@ class AuthenticationActivity : AppCompatActivity() {
                                                 listOf(),
                                                 1,
                                                 deviceId ?: "",
+                                                "",
                                                 false,
                                                 System.currentTimeMillis()
                                             )

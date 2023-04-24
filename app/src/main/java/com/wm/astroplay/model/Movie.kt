@@ -21,14 +21,18 @@ data class Movie(
     val genre: List<String>? = null,
     val runtime: String? = null,
     val plot: String? = null,
+    val quality: String? = null,
     val poster: String? = null,
+    val banner: String? = null,
     val imdbRating: String? = null,
     val appRating: Float? = null,
     val views: Int? = null,
+    val new: Boolean? = false,
     val language: String? = null,
     val ageRating: String? = null,
     val url: String = "",
     val numVotes: Int? = null,
+    val isPremiere: Boolean? = false,
     @Serializable(with = TimestampSerializer::class)
     val createdAt: Timestamp? = null
 ) : Parcelable

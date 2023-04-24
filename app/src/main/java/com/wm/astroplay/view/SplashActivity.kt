@@ -49,7 +49,7 @@ class SplashActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             runCatching { FirebaseMessaging.getInstance().token.await() }
-                .onSuccess { token -> Log.d("AstroDebug", token) }
+                .onSuccess { token -> userPreferences.saveFcmToken(token) }
                 .onFailure { /* Handle failure here, if necessary */ }
         }
 

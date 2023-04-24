@@ -90,14 +90,13 @@ class MovieDetailActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
 
+        lifecycleScope.launch(Dispatchers.IO) {
             userPreferences.getFavorites().collect { favorites ->
                 userFavorites = favorites.toMutableList()
                 isFavorite = favorites.any { it.title == (movie?.title) }
-                Log.d(
-                    "AstroDebug",
-                    "isFavorite ${isFavorite.toString()} Favorite list: ${favorites.toString()}"
-                )
+
                 withContext(Dispatchers.Main) {
                     if (isFavorite) binding.btnFavorite.setImageDrawable(
                         ContextCompat.getDrawable(
@@ -136,7 +135,7 @@ class MovieDetailActivity : AppCompatActivity() {
 
         // Establece la información de la película en los elementos de la vista
         binding.movieTitle.text = movie?.title
-        binding.txtAge.text = movie?.ageRating
+        binding.txtQuality.text = movie?.quality ?: "HD"
         binding.txtRate.text = movie?.imdbRating
         binding.txtTime.text = movie?.runtime
         binding.txtYear.text = movie?.year.toString()
@@ -189,6 +188,10 @@ class MovieDetailActivity : AppCompatActivity() {
             }
         }
 
+        binding.btnShare.setOnClickListener {
+            startShareFlow()
+        }
+
         binding.btnRate.setOnClickListener {
             showRatingDialog()
         }
@@ -213,16 +216,16 @@ class MovieDetailActivity : AppCompatActivity() {
                             putExtra("movie", movie as Parcelable)
                         })
                 }
-                Log.d("AstroDebug","Ad Dismissed!")
+              //  Log.d("AstroDebug","Ad Dismissed!")
             }
 
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                Log.d("AstroDebug","Ad Failed!")
+               // Log.d("AstroDebug","Ad Failed!")
                 initInterstitial()
             }
 
             override fun onAdShowedFullScreenContent() {
-                Log.d("AstroDebug","Ad Showed!")
+               // Log.d("AstroDebug","Ad Showed!")
                 movieAnnounce = null
                 initInterstitial()
             }
@@ -283,6 +286,20 @@ class MovieDetailActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun startShareFlow(){
+        val share = Intent.createChooser(Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "https://astroplay.dev/?id=${movie?.id ?: movie?.title.toString()}")
+            putExtra(Intent.EXTRA_TITLE, "AstroPlay - Peliculas y Series Online")
+            type="text/plain"
+            flags=Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }, getString(R.string.share_title).toString())
+        val bundle = Bundle()
+        bundle.putString("share_movie","share")
+        FirebaseAnalytics.getInstance(applicationContext).logEvent("share_movie",bundle)
+        startActivity(share)
     }
 
     private fun showRatingDialog() {

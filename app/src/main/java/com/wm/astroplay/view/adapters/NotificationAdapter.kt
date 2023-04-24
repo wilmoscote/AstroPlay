@@ -1,6 +1,9 @@
 package com.wm.astroplay.view.adapters
 
 import android.animation.Animator
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -16,6 +19,7 @@ import com.wm.astroplay.R
 import com.wm.astroplay.databinding.ItemNotificationBinding
 import com.wm.astroplay.model.Notification
 import com.wm.astroplay.model.interfaces.NotificationInterface
+import com.wm.astroplay.view.MainActivity
 import org.joda.time.DateTime
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormatterBuilder
@@ -39,7 +43,7 @@ class NotificationAdapter(private val notifications: MutableList<Notification>,v
 
     inner class NotificationViewHolder(private val binding: ItemNotificationBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
+        val context: Context? = binding.root.context
         fun bind(notification: Notification) {
             binding.apply {
                 //iconNotification.setImageResource(notification.iconRes) // Reemplaza esto con el ícono que corresponda a la notificación
@@ -58,6 +62,11 @@ class NotificationAdapter(private val notifications: MutableList<Notification>,v
                 optionsIcon.setOnClickListener {
                     // Aquí puedes mostrar un menú de opciones si es necesario, pero en este caso solo vamos a eliminar la notificación
                     simulateSwipe(notification)
+                }
+                notificationLayout.setOnClickListener {
+                    val intent = Intent(context, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    intent.data = Uri.parse(notification.link)
                 }
             }
 

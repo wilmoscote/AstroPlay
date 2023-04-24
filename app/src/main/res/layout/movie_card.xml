@@ -34,17 +34,62 @@
             android:textColor="@color/palette_white"
             android:fontFamily="@font/poppins_bold"
             android:textSize="16sp"
-
             tools:text="Titulo de la película" />
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal">
         <TextView
             android:id="@+id/movie_genre"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="4dp"
             android:textColor="@color/palette_white_down"
             android:fontFamily="@font/poppins"
             android:textSize="12sp"
-            tools:text="Género de la película" />
+            android:layout_weight="2"
+            tools:text="Accion" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:scaleType="fitXY"
+                        android:layout_marginHorizontal="4dp"
+                        android:layout_marginBottom="2dp"
+                        android:src="@drawable/ic_star" />
+                    <TextView
+                        android:id="@+id/txtRate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        android:textColor="@color/palette_white"
+                        tools:text="8.8" />
+                </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
+    <FrameLayout
+        android:id="@+id/premiereLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@drawable/premiere_background"
+        android:layout_marginTop="10dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_bold"
+            android:textSize="12sp"
+            android:textColor="@color/palette_white"
+            android:paddingHorizontal="4dp"
+            android:text="@string/new_movie"
+            />
+    </FrameLayout>
 </androidx.cardview.widget.CardView>

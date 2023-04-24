@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<defaults>
+  <entry>
+    <key>version</key>
+    <value>1</value>
+  </entry>
+  <entry>
+    <key>app_disabled</key>
+    <value>false</value>
+  </entry>
+</defaults>

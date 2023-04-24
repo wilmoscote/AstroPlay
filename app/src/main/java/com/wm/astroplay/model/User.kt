@@ -1,9 +1,6 @@
 package com.wm.astroplay.model
 
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.ServerTimestamp
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 data class User(
@@ -11,9 +8,10 @@ data class User(
     val name:String? = null,
     val email:String? = null,
     val photo:String? = null,
-    val favorites: List<String> = listOf(),
+    val favorites: List<String>? = listOf(),
     val role: Int? = null,
     val deviceId: String? = null,
+    val fcmToken: String? = null,
     val disabled: Boolean? = false,
     val createdAt: Long? = null
 )

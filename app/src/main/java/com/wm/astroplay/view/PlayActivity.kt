@@ -2,23 +2,19 @@ package com.wm.astroplay.view
 
 import android.annotation.SuppressLint
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.widget.SeekBar
 import androidx.activity.viewModels
-import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.ui.PlayerControlView
-import com.google.android.exoplayer2.ui.StyledPlayerControlView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.wm.astroplay.R
@@ -29,7 +25,6 @@ import com.wm.astroplay.view.MainActivity.Companion.TAG
 import com.wm.astroplay.viewmodel.MoviesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
@@ -116,7 +111,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error: ${e.message.toString()}")
+               // Log.e(TAG, "Error: ${e.message.toString()}")
             }//
             true
         }
@@ -132,6 +127,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
 
 
     private fun preparePlayer() {
+       // Log.d("AstroDebug","Playing: ${movie?.url.toString()}")
         // Crear y configurar el reproductor ExoPlayer
         exoPlayer = ExoPlayer.Builder(this).build().apply {
             playWhenReady = true
@@ -146,12 +142,16 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
         }
 
         // Crear y configurar la fuente de datos HTTP y la fuente de medios
+        val requestProperty = mutableMapOf<String,String>()
+        requestProperty["Authorization"] = "Bearer 235eb531-5df5-4737-aa97-1c6142862741"
         val dataSourceFactory = DefaultHttpDataSource.Factory()
+            .setDefaultRequestProperties(requestProperty)
         val mediaItem = MediaItem.fromUri(movie?.url.toString())
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
 
         // Preparar el reproductor con la fuente de medios
         exoPlayer?.setMediaSource(mediaSource)
+
         exoPlayer?.prepare()
     }
 
@@ -261,11 +261,15 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
             }
         }
 
+        override fun onPlayerError(error: PlaybackException) {
+            super.onPlayerError(error)
+           // Log.d("AstroDebug","Error: ${error.message.toString()} - ${error.errorCodeName.toString()}")
+        }
     }
 
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
-        Log.e("AstroDebug", "Player error: ${error.message}", error)
+        //Log.e("AstroDebug", "Player error: ${error.message}", error)
     }
 
     private fun getSystemUiVisibility(): Int {

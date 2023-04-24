@@ -29,11 +29,8 @@ import com.wm.astroplay.R
 import com.wm.astroplay.databinding.FragmentProfileBinding
 import com.wm.astroplay.model.User
 import com.wm.astroplay.model.UserPreferences
-import com.wm.astroplay.view.AuthenticationActivity
-import com.wm.astroplay.view.EditProfileActivity
+import com.wm.astroplay.view.*
 import com.wm.astroplay.view.MainActivity.Companion.TAG
-import com.wm.astroplay.view.RequestActivity
-import com.wm.astroplay.view.TermsActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,6 +57,7 @@ class ProfileFragment : Fragment() {
         setupEditProfileButton()
         setupLogoutButton()
         setupTermsButton()
+        setupDmcaButton()
         setupRequestButton()
         setupVersionInfo()
 
@@ -161,6 +159,12 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun setupDmcaButton() {
+        binding.btnDmca.setOnClickListener {
+            startActivity(Intent(this.requireContext(), DmcaActivity::class.java))
+        }
+    }
+
     private fun setupRequestButton() {
         binding.btnRequest.setOnClickListener {
             startActivity(Intent(this.requireContext(), RequestActivity::class.java))
@@ -220,25 +224,25 @@ class ProfileFragment : Fragment() {
 
                     usersRef.document(userId).update("role", newRole)
                         .addOnSuccessListener {
-                            Log.d(TAG, "Rol del usuario actualizado correctamente")
+                           // Log.d(TAG, "Rol del usuario actualizado correctamente")
                         }
                         .addOnFailureListener { e ->
-                            Log.w(TAG, "Error al actualizar el rol del usuario", e)
+                           // Log.w(TAG, "Error al actualizar el rol del usuario", e)
                         }
 
                     usersRef.document(userId).update("disabled", disabled)
                         .addOnSuccessListener {
-                            Log.d(TAG, "Estado del usuario actualizado correctamente")
+                          //  Log.d(TAG, "Estado del usuario actualizado correctamente")
                         }
                         .addOnFailureListener { e ->
-                            Log.w(TAG, "Error al actualizar el Estado del usuario", e)
+                           // Log.w(TAG, "Error al actualizar el Estado del usuario", e)
                         }
                     Toast.makeText(this@ProfileFragment.requireContext(),getString(R.string.user_updated),Toast.LENGTH_LONG).show()
                 }
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this@ProfileFragment.requireContext(),getString(R.string.user_update_error),Toast.LENGTH_LONG).show()
-                Log.w(TAG, "Error al buscar usuario por correo electrónico", e)
+                //Log.w(TAG, "Error al buscar usuario por correo electrónico", e)
             }
     }
 

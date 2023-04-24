@@ -2,9 +2,11 @@ package com.wm.astroplay.view.adapters
 
 import android.content.Intent
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -27,7 +29,8 @@ class MovieAdapter(private val movies: List<Movie>) : RecyclerView.Adapter<Movie
 
         holder.binding.movieTitle.text = movie.title
         holder.binding.movieGenre.text = movie.genre?.get(0)
-
+        holder.binding.premiereLayout.isVisible = movie.new ?: false
+        holder.binding.txtRate.text = movie.imdbRating.toString()
         Glide.with(holder.binding.moviePoster.context)
             .load(movie.poster)
             .transition(DrawableTransitionOptions.withCrossFade())

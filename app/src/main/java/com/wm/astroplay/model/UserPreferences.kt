@@ -50,6 +50,10 @@ class UserPreferences(private val context: Context) {
         }
     }
 
+    fun getFcmToken() = dataStore.data.map { preferences ->
+        preferences[stringPreferencesKey("fcm_token")]
+    }
+
     /** SETTERS **/
     suspend fun saveTheme(isDark: Boolean) {
         dataStore.edit { preferences ->
@@ -81,6 +85,12 @@ class UserPreferences(private val context: Context) {
         val jsonString = Json.encodeToString(favorites)
         dataStore.edit { preferences ->
             preferences[stringPreferencesKey("favorites")] = jsonString
+        }
+    }
+
+    suspend fun saveFcmToken(token: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey("fcm_token")] = token
         }
     }
 }

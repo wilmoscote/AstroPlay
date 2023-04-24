@@ -33,7 +33,8 @@
             <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_scrollFlags="scroll|enterAlways" />
+                app:layout_scrollFlags="scroll|enterAlways">
+            </androidx.appcompat.widget.Toolbar>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -72,7 +73,6 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:scaleType="fitXY"
-                    android:background="?attr/selectableItemBackground"
                     android:src="@drawable/ic_favorite_nav" />
             </LinearLayout>
 
@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
                 android:textColor="@color/palette_white_down"
-                tools:text="Reparto: Keanu Reeves, Jim Carrey, Adam Sandler, Mark Whalberg" />
+                tools:text="Reparto: Keanu Reeves, Jim Carrey, Adam Sandler, Mark Wahlberg" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -122,13 +122,13 @@
                     android:background="@drawable/search_background">
 
                     <TextView
-                        android:id="@+id/txtAge"
+                        android:id="@+id/txtQuality"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
                         android:paddingHorizontal="10dp"
                         android:textColor="@color/palette_white"
-                        tools:text="B" />
+                        tools:text="CAM" />
                 </FrameLayout>
 
                 <FrameLayout
@@ -272,5 +272,17 @@
         app:srcCompat="@drawable/ic_left_arrow"
         app:tint="@color/palette_white"
         />
+
+    <ImageView
+        android:id="@+id/btnShare"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="16dp"
+        android:layout_gravity="top|end"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:srcCompat="@drawable/ic_share" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

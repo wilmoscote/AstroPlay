@@ -5,6 +5,8 @@
     <uses-permission
         android:name="android.permission.POST_NOTIFICATIONS"
         tools:node="remove" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -12,11 +14,14 @@
         android:fullBackupContent="@xml/backup_rules"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher2"
-        android:roundIcon="@mipmap/ic_launcher2_round"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher2_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AstroPlay"
         tools:targetApi="31">
+        <activity
+            android:name=".view.DmcaActivity"
+            android:exported="false" />
         <activity
             android:name=".view.EditProfileActivity"
             android:exported="false" />
@@ -36,13 +41,36 @@
             android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".view.MovieDetailActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="astroplay.dev"
+                    android:scheme="https" />
+                <data android:pathPrefix="/appmovie" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".view.AuthenticationActivity"
             android:exported="false" />
         <activity
             android:name=".view.MainActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="astroplay.dev"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".view.SplashActivity"
             android:exported="true"
@@ -62,15 +90,6 @@
             </intent-filter>
         </service>
 
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_notify" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/palette_red" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-1892256007304751~6716095706" />

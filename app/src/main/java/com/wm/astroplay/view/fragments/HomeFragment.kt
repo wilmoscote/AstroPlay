@@ -1,7 +1,9 @@
 package com.wm.astroplay.view.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -23,6 +25,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.denzcoskun.imageslider.constants.AnimationTypes
+import com.denzcoskun.imageslider.constants.ScaleTypes
+import com.denzcoskun.imageslider.interfaces.ItemClickListener
+import com.denzcoskun.imageslider.models.SlideModel
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -35,6 +41,7 @@ import com.wm.astroplay.model.MovieProvider
 import com.wm.astroplay.model.User
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.model.interfaces.FragmentNavigationListener
+import com.wm.astroplay.view.MovieDetailActivity
 import com.wm.astroplay.view.adapters.MovieAdapter
 import com.wm.astroplay.viewmodel.MoviesViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -106,12 +113,36 @@ class HomeFragment : Fragment() {
         val quotes = MovieProvider.getQuotes()
         val randomIndex = Random.nextInt(quotes.size)
         binding.randomText.text = quotes[randomIndex]
-
         setupClickListeners()
 
         setupSwipeRefresh()
 
         observeViewModel()
+    }
+
+    private fun setupImageSlider(movies: List<Movie>){
+        if(movies.isNotEmpty()){
+            val imageList = ArrayList<SlideModel>() // Create image list
+            movies.map { movie ->
+                imageList.add(SlideModel(movie.banner, "Estreno: ${movie.title}"))
+            }
+
+            binding.imageSlider.setImageList(imageList, ScaleTypes.FIT)
+
+            binding.imageSlider.setItemClickListener(object : ItemClickListener {
+                override fun onItemSelected(position: Int) {
+                    val intent = Intent(this@HomeFragment.requireContext(), MovieDetailActivity::class.java)
+                    intent.putExtra("movie", movies[position] as Parcelable)
+                    startActivity(intent)
+                }
+
+                override fun doubleClick(position: Int) {
+                    //
+                } })
+        } else {
+            binding.imageSlider.isVisible = false
+        }
+
     }
 
     private fun setupClickListeners() {
@@ -132,6 +163,10 @@ class HomeFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.apply {
+            premiereMovieList.observe(viewLifecycleOwner){ movies ->
+                setupImageSlider(movies)
+            }
+
             popularMovieList.observe(viewLifecycleOwner) { movies ->
                 setupRecyclerView(binding.popularMoviesView, binding.popularMoviesViewLoading, movies)
             }
@@ -170,6 +205,7 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             binding.swipeRefresh.isRefreshing = true
             try {
+                viewModel.fetchPremiereMovies()
                 viewModel.fetchPopularMovies()
                 viewModel.fetchRecentsMovies()
                 viewModel.fetchRandomMovies()

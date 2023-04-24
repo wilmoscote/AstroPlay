@@ -8,5 +8,6 @@ data class Notification(
     val message: String? = null,
     val timestamp: Timestamp? = null,
     val type: String? = null, // tipo de notificación, por ejemplo: "new_release", "news", etc.
-    val targetUsers: List<String>? = null // lista de ID de usuarios a los que va dirigida la notificación
+    val targetUsers: List<String>? = null, // lista de ID de usuarios a los que va dirigida la notificación
+    val link: String? = null
 )

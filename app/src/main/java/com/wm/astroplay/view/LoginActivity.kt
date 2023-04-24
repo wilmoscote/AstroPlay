@@ -9,7 +9,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -150,6 +149,7 @@ class LoginActivity : AppCompatActivity() {
                                             listOf(),
                                             1,
                                             deviceId ?: "",
+                                            "",
                                             false,
                                             System.currentTimeMillis()
                                         )
@@ -172,7 +172,7 @@ class LoginActivity : AppCompatActivity() {
                                                 }
                                             }
                                             .addOnFailureListener { e ->
-                                                Log.w("AstroDebug", "Error al agregar usuario", e)
+                                               // Log.w("AstroDebug", "Error al agregar usuario", e)
                                             }
                                     }
                                 }
@@ -225,6 +225,7 @@ class LoginActivity : AppCompatActivity() {
                                             listOf(),
                                             1,
                                             deviceId ?: "",
+                                            "",
                                             false,
                                             System.currentTimeMillis()
                                         )
@@ -253,7 +254,7 @@ class LoginActivity : AppCompatActivity() {
                                                 }
                                             }
                                             .addOnFailureListener { e ->
-                                                Log.w("AstroDebug", "Error al agregar usuario", e)
+                                                //Log.w("AstroDebug", "Error al agregar usuario", e)
                                             }
                                     }
                                 }
