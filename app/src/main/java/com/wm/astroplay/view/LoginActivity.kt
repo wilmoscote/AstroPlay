@@ -229,17 +229,16 @@ class LoginActivity : AppCompatActivity() {
                                             false,
                                             System.currentTimeMillis()
                                         )
-                                        lifecycleScope.launch {
+                                        lifecycleScope.launch(Dispatchers.IO) {
                                             userPreferences.saveUser(user)
                                         }
                                         userRef.set(user)
                                             .addOnSuccessListener {
-                                                CoroutineScope(Dispatchers.IO).launch {
+                                                lifecycleScope.launch(Dispatchers.IO) {
                                                     document.toObject(User::class.java)
                                                         ?.let { it1 ->
                                                             userPreferences.saveUser(it1)
                                                         }
-
 
                                                     runOnUiThread {
                                                         binding.loading.isVisible = false

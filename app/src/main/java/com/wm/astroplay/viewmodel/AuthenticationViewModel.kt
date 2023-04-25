@@ -1,12 +1,15 @@
 package com.wm.astroplay.viewmodel
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.wm.astroplay.R
 import com.wm.astroplay.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,5 +74,27 @@ class AuthenticationViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    suspend fun updateUserToken(email: String, token: String) {
+        val db = FirebaseFirestore.getInstance()
+        val usersRef = db.collection("users")
+
+        usersRef.whereEqualTo("email", email).get()
+            .addOnSuccessListener { querySnapshot ->
+                    val userDoc = querySnapshot.documents.first()
+                    val userId = userDoc.id
+
+                    usersRef.document(userId).update("fcmToken", token)
+                        .addOnSuccessListener {
+                            // Log.d(TAG, "Rol del usuario actualizado correctamente")
+                        }
+                        .addOnFailureListener { e ->
+                            // Log.w(TAG, "Error al actualizar el rol del usuario", e)
+                        }
+            }
+            .addOnFailureListener { e ->
+                //Log.w(TAG, "Error al buscar usuario por correo electrónico", e)
+            }
     }
 }

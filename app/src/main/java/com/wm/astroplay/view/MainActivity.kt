@@ -50,6 +50,7 @@ import com.wm.astroplay.model.User
 import com.wm.astroplay.model.UserPreferences
 import com.wm.astroplay.model.interfaces.FragmentNavigationListener
 import com.wm.astroplay.view.fragments.*
+import com.wm.astroplay.viewmodel.AuthenticationViewModel
 import com.wm.astroplay.viewmodel.MoviesViewModel
 import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.CoroutineScope
@@ -63,6 +64,7 @@ import kotlin.random.Random
 class MainActivity : AppCompatActivity(), FragmentNavigationListener {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MoviesViewModel by viewModels()
+    private val userViewModel: AuthenticationViewModel by viewModels()
     private val homeFragment = HomeFragment()
     private val profileFragment = ProfileFragment()
     private val favoritesFragment = FavoritesFragment()
@@ -103,6 +105,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
             userPreferences.getUser().collect { user ->
                 try {
                     listenToUserChanges(user?.id ?: "")
+                    updateUserToken(user?.email ?: "")
                 } catch (e: Exception) {
                     //
                 }
@@ -227,6 +230,18 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
             }
         } catch (e: Exception) {
             //
+        }
+    }
+
+    private fun updateUserToken(email:String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            userPreferences.getFcmToken().collect { token ->
+                try {
+                    userViewModel.updateUserToken(email, token ?: "")
+                } catch (e: Exception) {
+                    //
+                }
+            }
         }
     }
 

@@ -112,7 +112,7 @@ class MovieDetailActivity : AppCompatActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenHeight = displayMetrics.heightPixels
         val layoutParams = binding.appBar.layoutParams
-        layoutParams.height = screenHeight / 2
+        layoutParams.height = screenHeight / 3
         binding.appBar.layoutParams = layoutParams
 
         Glide.with(this)
@@ -143,8 +143,7 @@ class MovieDetailActivity : AppCompatActivity() {
         // Une los géneros en una sola cadena para mostrarlos en la vista
         val genres = movie?.genre?.joinToString(", ") ?: "N/A"
         binding.movieGenres.text = genres
-
-        binding.movieSynopsis.text = movie?.plot + " (${movie?.year})"
+        binding.movieSynopsis.text = movie?.plot
         binding.txtDirector.text = getString(R.string.director_text, movie?.director)
         val cast = movie?.actors?.joinToString(", ") ?: "N/A"
         binding.txtCast.text = getString(R.string.cast_text, cast)

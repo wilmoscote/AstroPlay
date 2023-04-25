@@ -207,26 +207,22 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        relasePlayer()
-    }
-
     override fun onPause() {
         super.onPause()
-        playbackPosition = exoPlayer?.currentPosition ?: 0
-        // Libera el reproductor si es necesario
-
-        CoroutineScope(Dispatchers.IO).launch {
-            userPreferences.saveMoviePlaybackPosition(movie?.title.toString(), playbackPosition)
+        try {
+            playbackPosition = exoPlayer?.currentPosition ?: 0
+            exoPlayer?.pause()
+        } catch (e:Exception){
+            //
         }
+        // Libera el reproductor si es necesario
     }
 
     override fun onResume() {
         super.onResume()
         // Restaura la posición de reproducción
         if (exoPlayer != null) {
-            exoPlayer?.seekTo(playbackPosition)
+            //exoPlayer?.seekTo(playbackPosition)
             exoPlayer?.playWhenReady = true
         } else {
             // Inicializa el reproductor si es necesario
@@ -236,6 +232,9 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
 
     override fun onDestroy() {
         super.onDestroy()
+        CoroutineScope(Dispatchers.IO).launch {
+            userPreferences.saveMoviePlaybackPosition(movie?.title.toString(), playbackPosition)
+        }
         relasePlayer()
     }
 
