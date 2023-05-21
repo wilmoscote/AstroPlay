@@ -49,7 +49,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
         userPreferences = UserPreferences(applicationContext)
 
         movie = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("movie", Movie::class.java)
+            intent.getParcelableExtra("movie")
         } else {
             intent.getParcelableExtra<Movie>("movie")
         }

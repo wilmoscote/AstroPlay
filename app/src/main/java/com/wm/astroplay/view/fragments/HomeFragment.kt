@@ -2,6 +2,7 @@ package com.wm.astroplay.view.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
@@ -14,6 +15,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -30,6 +32,12 @@ import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
 import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.android.ads.nativetemplates.NativeTemplateStyle
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -83,7 +91,7 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(layoutInflater)
         userPreferences = UserPreferences(this.requireContext())
-
+        MobileAds.initialize(this.requireContext())
         viewLifecycleOwner.lifecycleScope.launch {
             //viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 val user = userPreferences.getUser().firstOrNull()
@@ -118,6 +126,16 @@ class HomeFragment : Fragment() {
         setupSwipeRefresh()
 
         observeViewModel()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                if((user?.role ?: 1) < 2){
+                    loadAd()
+                }
+            } catch (e:Exception){
+                loadAd()
+            }
+        }
     }
 
     private fun setupImageSlider(movies: List<Movie>){
@@ -216,5 +234,46 @@ class HomeFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = false
         }
     }
+
+    //REAL: ca-app-pub-1892256007304751/2610535987
+    //TEST: ca-app-pub-3940256099942544/2247696110
+    private suspend fun loadAd() {
+        try {
+            if (!isAdded) {
+                return
+            }
+
+            val adLoader = AdLoader.Builder(requireContext(), "ca-app-pub-1892256007304751/2610535987")
+                .forNativeAd { nativeAd ->
+                    if (!isAdded) {
+                        return@forNativeAd
+                    }
+                    val cd = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
+                    val styles =
+                        NativeTemplateStyle.Builder().withMainBackgroundColor(cd)
+                            .build()
+                    binding.homeAd.setStyles(styles)
+                    binding.homeAd.setNativeAd(nativeAd)
+                }
+                .withAdListener(object : AdListener() {
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        // Handle the failure by logging, altering the UI, and so on.
+                    }
+
+                    override fun onAdLoaded() {
+                        super.onAdLoaded()
+                        if (isAdded) {
+                            binding.homeAd.isVisible = true
+                        }
+                    }
+                })
+                .build()
+
+            adLoader.loadAd(AdRequest.Builder().build())
+        } catch (e:Exception){
+            // Handle the exception
+        }
+    }
+
 
 }

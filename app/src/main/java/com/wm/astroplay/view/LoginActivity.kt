@@ -117,8 +117,8 @@ class LoginActivity : AppCompatActivity() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         CoroutineScope(Dispatchers.IO).launch {
-                            val account = task.result.user
-                            val userId = task.result.user?.uid
+                            val account = task.result?.user
+                            val userId = task.result?.user?.uid
                             val userRef = db.collection("users").document(userId.toString())
 
                             userRef.get()
@@ -193,8 +193,8 @@ class LoginActivity : AppCompatActivity() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         CoroutineScope(Dispatchers.IO).launch {
-                            val account = task.result.user
-                            val userId = task.result.user?.uid
+                            val account = task.result?.user
+                            val userId = task.result?.user?.uid
                             val userRef = db.collection("users").document(userId.toString())
 
                             userRef.get()

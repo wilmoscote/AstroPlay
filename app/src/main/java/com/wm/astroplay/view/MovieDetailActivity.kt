@@ -56,7 +56,7 @@ class MovieDetailActivity : AppCompatActivity() {
         firebaseAnalytics = Firebase.analytics
 
         movie = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("movie", Movie::class.java)
+            intent.getParcelableExtra("movie")
         } else {
             intent.getParcelableExtra<Movie>("movie")
         }
@@ -233,7 +233,7 @@ class MovieDetailActivity : AppCompatActivity() {
 
     private fun initInterstitial() {
         val adRequest: AdRequest = AdRequest.Builder().build()
-        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest,
+        InterstitialAd.load(this, "ca-app-pub-1892256007304751/7211468461", adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
                     movieAnnounce = interstitialAd
