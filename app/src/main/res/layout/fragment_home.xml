@@ -6,301 +6,303 @@
     android:layout_height="wrap_content"
     android:background="@color/palette_black"
     tools:context=".view.fragments.HomeFragment">
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="15dp">
-
-                <ImageView
-                    android:id="@+id/profileImg"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
-
-                <TextView
-                    android:id="@+id/welcomeText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_toEndOf="@+id/profileImg"
-                    android:fontFamily="@font/poppins_bold"
-                    android:textColor="@color/palette_white"
-                    android:textSize="16sp"
-                    tools:text="Hola, Wilfred" />
-
-                <TextView
-                    android:id="@+id/randomText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/profileImg"
-                    android:layout_marginStart="8dp"
-                    android:layout_toEndOf="@+id/profileImg"
-                    android:fontFamily="@font/poppins"
-                    tools:text="@string/wanna_see"
-                    android:textColor="@color/palette_white_down"
-                    android:textSize="14sp" />
-
-                <ImageView
-                    android:id="@+id/btnNotification"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="15dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:srcCompat="@drawable/ic_notifications" />
-                <ImageView
-                    android:id="@+id/notifyIcon"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_marginTop="13dp"
-                    android:layout_marginEnd="5dp"
-                    android:visibility="gone"
-                    android:layout_alignTop="@+id/btnNotification"
-                    android:layout_alignEnd="@+id/btnNotification"
-                    app:srcCompat="@drawable/ic_circle_notify" />
-            </RelativeLayout>
+            android:layout_marginBottom="50dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
-                android:id="@+id/homeFeedLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
                 android:orientation="vertical">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="15dp"
-                    android:layout_margin="15dp"
-                    >
-                    <com.denzcoskun.imageslider.ImageSlider
-                        android:id="@+id/imageSlider"
-                        android:layout_width="wrap_content"
-                        android:layout_height="200dp"
-                        app:iss_auto_cycle="true"
-                        app:iss_placeholder="@color/transparent"
-                        android:background="@color/transparent"
-                        app:iss_period="8000"
-                        app:iss_delay="8000"
-                        app:iss_text_align="CENTER"/>
-                </androidx.cardview.widget.CardView>
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="15dp">
+
+                    <ImageView
+                        android:id="@+id/profileImg"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
 
                     <TextView
-                        android:id="@+id/section0Title"
+                        android:id="@+id/welcomeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_toEndOf="@+id/profileImg"
                         android:fontFamily="@font/poppins_bold"
-                        android:text="@string/popular_movies_title"
                         android:textColor="@color/palette_white"
-                        android:textSize="18sp" />
+                        android:textSize="16sp"
+                        tools:text="Hola, Wilfred" />
 
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:id="@+id/popularMoviesViewLoading"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/randomText"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@+id/banner"
-                        app:shimmer_auto_start="true">
+                        android:layout_alignBottom="@+id/profileImg"
+                        android:layout_marginStart="8dp"
+                        android:layout_toEndOf="@+id/profileImg"
+                        android:fontFamily="@font/poppins"
+                        android:textColor="@color/palette_white_down"
+                        android:textSize="14sp"
+                        tools:text="@string/wanna_see" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                    <ImageView
+                        android:id="@+id/btnNotification"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="15dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:srcCompat="@drawable/ic_notifications" />
 
-                            <include layout="@layout/movie_card_loading" />
+                    <ImageView
+                        android:id="@+id/notifyIcon"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_alignTop="@+id/btnNotification"
+                        android:layout_alignEnd="@+id/btnNotification"
+                        android:layout_marginTop="13dp"
+                        android:layout_marginEnd="5dp"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/ic_circle_notify" />
+                </RelativeLayout>
 
-                            <include layout="@layout/movie_card_loading" />
-
-                            <include layout="@layout/movie_card_loading" />
-
-                            <include layout="@layout/movie_card_loading" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/popularMoviesView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:visibility="gone" />
+                <LinearLayout
+                    android:id="@+id/homeFeedLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical">
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardCornerRadius="15dp"
-                        android:layout_marginHorizontal="5dp"
-                        >
-                        <com.google.android.ads.nativetemplates.TemplateView
-                            android:id="@+id/homeAd"
-                            app:gnt_template_type="@layout/gnt_small_template_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone"
-                            />
+                        android:layout_margin="15dp"
+                        app:cardCornerRadius="15dp">
+
+                        <com.denzcoskun.imageslider.ImageSlider
+                            android:id="@+id/imageSlider"
+                            android:layout_width="wrap_content"
+                            android:layout_height="200dp"
+                            android:background="@color/transparent"
+                            app:iss_auto_cycle="true"
+                            app:iss_delay="8000"
+                            app:iss_period="8000"
+                            app:iss_placeholder="@color/transparent"
+                            app:iss_text_align="CENTER" />
                     </androidx.cardview.widget.CardView>
-                </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/section1Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:fontFamily="@font/poppins_bold"
-                        android:text="@string/recomended_movies_title"
-                        android:textColor="@color/palette_white"
-                        android:textSize="18sp" />
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:id="@+id/randomMoviesViewLoading"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@+id/banner"
-                        app:shimmer_auto_start="true">
+                        android:orientation="vertical">
 
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/section0Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:fontFamily="@font/poppins_bold"
+                            android:text="@string/popular_movies_title"
+                            android:textColor="@color/palette_white"
+                            android:textSize="18sp" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/popularMoviesViewLoading"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            app:layout_constraintTop_toBottomOf="@+id/banner"
+                            app:shimmer_auto_start="true">
 
-                            <include layout="@layout/movie_card_loading" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
 
-                            <include layout="@layout/movie_card_loading" />
+                                <include layout="@layout/movie_card_loading" />
 
-                            <include layout="@layout/movie_card_loading" />
+                                <include layout="@layout/movie_card_loading" />
 
-                            <include layout="@layout/movie_card_loading" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/randomMoviesView"
-                        android:layout_width="match_parent"
-                        android:visibility="gone"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" />
-                </LinearLayout>
+                                <include layout="@layout/movie_card_loading" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                                <include layout="@layout/movie_card_loading" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
 
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/sectionBestRated"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:fontFamily="@font/poppins_bold"
-                        android:text="@string/best_rated_title"
-                        android:textColor="@color/palette_white"
-                        android:textSize="18sp" />
-
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:id="@+id/ratedMoviesViewLoading"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@+id/banner"
-                        app:shimmer_auto_start="true">
-
-                        <LinearLayout
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/popularMoviesView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:visibility="gone" />
 
-                            <include layout="@layout/movie_card_loading" />
-
-                            <include layout="@layout/movie_card_loading" />
-
-                            <include layout="@layout/movie_card_loading" />
-
-                            <include layout="@layout/movie_card_loading" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/ratedMoviesView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:visibility="gone" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="50dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/section2Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:fontFamily="@font/poppins_bold"
-                        android:text="@string/last_movies_title"
-                        android:textColor="@color/palette_white"
-                        android:textSize="18sp" />
-
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:id="@+id/recentMoviesViewLoading"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@+id/banner"
-                        app:shimmer_auto_start="true">
-
-                        <LinearLayout
+                        <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:layout_marginHorizontal="5dp"
+                            app:cardCornerRadius="15dp">
 
-                            <include layout="@layout/movie_card_loading" />
+                            <com.google.android.ads.nativetemplates.TemplateView
+                                android:id="@+id/homeAd"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:visibility="gone"
+                                app:gnt_template_type="@layout/gnt_small_template_view" />
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
 
-                            <include layout="@layout/movie_card_loading" />
-
-                            <include layout="@layout/movie_card_loading" />
-
-                            <include layout="@layout/movie_card_loading" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recentMoviesView"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:visibility="gone" />
-                </LinearLayout>
+                        android:orientation="vertical">
 
+                        <TextView
+                            android:id="@+id/section2Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:fontFamily="@font/poppins_bold"
+                            android:text="@string/last_movies_title"
+                            android:textColor="@color/palette_white"
+                            android:textSize="18sp" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/recentMoviesViewLoading"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@+id/banner"
+                            app:shimmer_auto_start="true">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <include layout="@layout/movie_card_loading" />
+
+                                <include layout="@layout/movie_card_loading" />
+
+                                <include layout="@layout/movie_card_loading" />
+
+                                <include layout="@layout/movie_card_loading" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recentMoviesView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/section1Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:fontFamily="@font/poppins_bold"
+                            android:text="@string/recomended_movies_title"
+                            android:textColor="@color/palette_white"
+                            android:textSize="18sp" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/randomMoviesViewLoading"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@+id/banner"
+                            app:shimmer_auto_start="true">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <include layout="@layout/movie_card_loading" />
+
+                                <include layout="@layout/movie_card_loading" />
+
+                                <include layout="@layout/movie_card_loading" />
+
+                                <include layout="@layout/movie_card_loading" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/randomMoviesView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="50dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/sectionBestRated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:fontFamily="@font/poppins_bold"
+                            android:text="@string/best_rated_title"
+                            android:textColor="@color/palette_white"
+                            android:textSize="18sp" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/ratedMoviesViewLoading"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@+id/banner"
+                            app:shimmer_auto_start="true">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <include layout="@layout/movie_card_loading" />
+
+                                <include layout="@layout/movie_card_loading" />
+
+                                <include layout="@layout/movie_card_loading" />
+
+                                <include layout="@layout/movie_card_loading" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/ratedMoviesView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>

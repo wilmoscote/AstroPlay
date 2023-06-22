@@ -225,7 +225,14 @@
                             android:src="@drawable/ic_thumb_up_filled" />
                 </LinearLayout>
             </LinearLayout>
-
+            <ProgressBar
+                android:id="@+id/loadingMovie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/btnGoogle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
             <Button
                 android:id="@+id/btnPlay"
                 style="@style/Widget.MaterialComponents.Button"
@@ -239,7 +246,7 @@
                 android:textColor="@color/palette_white"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:backgroundTint="@color/palette_red"
                 app:cornerRadius="10dp"
                 app:icon="@drawable/ic_play"

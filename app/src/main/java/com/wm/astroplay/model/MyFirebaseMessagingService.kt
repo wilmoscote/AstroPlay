@@ -29,10 +29,11 @@ import kotlinx.coroutines.tasks.await
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        //Log.d("AstroDebug","Message received")
+        Log.d("AstroDebug","Message received")
         // Check if message contains a data payload.
+        Log.d("AstroDebug","Data: ${remoteMessage.data.toString()}")
         remoteMessage.data["movie_link"]?.let { movieLink ->
-            //Log.d("AstroDebug","Notify MovieLink: $movieLink")
+            Log.d("AstroDebug","Notify MovieLink: $movieLink")
             createNotificationChannel()
             sendNotification(movieLink,remoteMessage.notification?.title ?: "AstroPlay", remoteMessage.notification?.body ?: "Tenemos esto para ti :)")
         }
@@ -78,6 +79,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setAutoCancel(true)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
             .setContentIntent(pendingIntent)
+
 
         val notificationManager = NotificationManagerCompat.from(this)
         if (ActivityCompat.checkSelfPermission(

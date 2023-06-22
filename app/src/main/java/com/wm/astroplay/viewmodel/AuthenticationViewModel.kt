@@ -79,7 +79,6 @@ class AuthenticationViewModel : ViewModel() {
     suspend fun updateUserToken(email: String, token: String) {
         val db = FirebaseFirestore.getInstance()
         val usersRef = db.collection("users")
-
         usersRef.whereEqualTo("email", email).get()
             .addOnSuccessListener { querySnapshot ->
                     val userDoc = querySnapshot.documents.first()

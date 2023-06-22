@@ -79,7 +79,7 @@ class AuthenticationActivity : AppCompatActivity() {
                 if (result.resultCode == Activity.RESULT_OK) {
                     val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                     try {
-                        account = task.getResult(ApiException::class.java)
+                        account = task.getResult(ApiException::class.java)!!
                         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                         auth.signInWithCredential(credential).addOnCompleteListener {
                             if (it.isSuccessful) {
@@ -106,9 +106,9 @@ class AuthenticationActivity : AppCompatActivity() {
                                             }
                                         } else {
                                             val user = User(
-                                                userId,
-                                                account.displayName,
-                                                account.email,
+                                                userId ?: UUID.randomUUID().toString(),
+                                                account.displayName ?: "User",
+                                                account.email ?: "user@user.com",
                                                 account.photoUrl.toString(),
                                                 listOf(),
                                                 1,

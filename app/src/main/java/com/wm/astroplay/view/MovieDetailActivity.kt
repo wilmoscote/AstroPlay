@@ -69,6 +69,11 @@ class MovieDetailActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         initInterstitial()
                     }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        binding.loadingMovie.isVisible = false
+                        binding.btnPlay.isVisible = true
+                    }
                 }
                 withContext(Dispatchers.Main) {
                     binding.btnPlay.setOnClickListener {
@@ -237,7 +242,8 @@ class MovieDetailActivity : AppCompatActivity() {
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
                     movieAnnounce = interstitialAd
-
+                    binding.loadingMovie.isVisible = false
+                    binding.btnPlay.isVisible = true
                 }
 
                 override fun onAdFailedToLoad(p0: LoadAdError) {
