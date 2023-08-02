@@ -113,17 +113,17 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/section0Title"
+                            android:id="@+id/section1Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
                             android:fontFamily="@font/poppins_bold"
-                            android:text="@string/popular_movies_title"
+                            android:text="@string/recomended_movies_title"
                             android:textColor="@color/palette_white"
                             android:textSize="18sp" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/popularMoviesViewLoading"
+                            android:id="@+id/randomMoviesViewLoading"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:layout_constraintTop_toBottomOf="@+id/banner"
@@ -145,25 +145,11 @@
                         </com.facebook.shimmer.ShimmerFrameLayout>
 
                         <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/popularMoviesView"
+                            android:id="@+id/randomMoviesView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:visibility="gone" />
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="5dp"
-                            app:cardCornerRadius="15dp">
-
-                            <com.google.android.ads.nativetemplates.TemplateView
-                                android:id="@+id/homeAd"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:visibility="gone"
-                                app:gnt_template_type="@layout/gnt_small_template_view" />
-                        </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
                     <LinearLayout
@@ -217,17 +203,17 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/section1Title"
+                            android:id="@+id/section0Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
                             android:fontFamily="@font/poppins_bold"
-                            android:text="@string/recomended_movies_title"
+                            android:text="@string/popular_movies_title"
                             android:textColor="@color/palette_white"
                             android:textSize="18sp" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/randomMoviesViewLoading"
+                            android:id="@+id/popularMoviesViewLoading"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:layout_constraintTop_toBottomOf="@+id/banner"
@@ -249,11 +235,25 @@
                         </com.facebook.shimmer.ShimmerFrameLayout>
 
                         <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/randomMoviesView"
+                            android:id="@+id/popularMoviesView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:visibility="gone" />
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="5dp"
+                            app:cardCornerRadius="15dp">
+
+                            <com.google.android.ads.nativetemplates.TemplateView
+                                android:id="@+id/homeAd"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:visibility="gone"
+                                app:gnt_template_type="@layout/gnt_small_template_view" />
+                        </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
                     <LinearLayout

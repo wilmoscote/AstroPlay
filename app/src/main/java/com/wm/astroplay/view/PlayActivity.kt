@@ -262,7 +262,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
 
         override fun onPlayerError(error: PlaybackException) {
             super.onPlayerError(error)
-           // Log.d("AstroDebug","Error: ${error.message.toString()} - ${error.errorCodeName.toString()}")
+            // Log.d("AstroDebug","Error: ${error.message.toString()} - ${error.errorCodeName.toString()}")
         }
     }
 
