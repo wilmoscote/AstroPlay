@@ -143,7 +143,7 @@ class PlayActivity : AppCompatActivity(), Player.Listener {
 
         // Crear y configurar la fuente de datos HTTP y la fuente de medios
         val requestProperty = mutableMapOf<String,String>()
-        requestProperty["Authorization"] = "Bearer 235eb531-5df5-4737-aa97-1c6142862741"
+        requestProperty["Authorization"] = "Bearer token"
         val dataSourceFactory = DefaultHttpDataSource.Factory()
             .setDefaultRequestProperties(requestProperty)
         val mediaItem = MediaItem.fromUri(movie?.url.toString())
